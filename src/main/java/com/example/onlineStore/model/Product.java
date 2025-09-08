@@ -8,6 +8,8 @@ public class Product {
     private String description;
     private BigDecimal price;
     private int stock;        // Cantidad disponible en inventario
+    private Discount discount;
+
 
     // Constructor
     public Product(String idProduct, String nameProduct, String description, BigDecimal price, int stock) {
@@ -58,4 +60,11 @@ public class Product {
     public void setStock(int stock) {
         this.stock = stock;
     }
+    public BigDecimal getPriceWithDiscount() {
+        if (discount != null && discount.isActive()) {
+            return price.multiply(BigDecimal.ONE.subtract(discount.getPercentage()));
+        }
+        return price;
+    }
+
 }

@@ -44,7 +44,7 @@ public class Inventory {
     public void updateCategory(Category category) {
         // Busca la categoría por id o nombre y reemplaza
         for (int i = 0; i < listCategories.size(); i++) {
-            if (listCategories.get(i).getName().equals(category.getName())) {
+            if (listCategories.get(i).getNameCategory().equals(category.getNameCategory())) {
                 listCategories.set(i, category);
                 this.lastUpdate = new Date();
                 break;
