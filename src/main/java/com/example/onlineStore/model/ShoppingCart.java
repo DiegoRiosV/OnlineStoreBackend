@@ -1,62 +1,97 @@
 package com.example.onlineStore.model;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+@Entity
+@Table(name = "shopping_carts")
 public class ShoppingCart {
-    // Clave = producto, Valor = cantidad
-    private Map<Product, Integer> items;
 
-    // Constructor
-    public ShoppingCart() {
-        this.items = new HashMap<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // Relación 1:1 con Client
+    @OneToOne
+    @JoinColumn(name = "client_id", unique = true)
+    private Client client;
+
+    // Relación con CartItem (carrito tiene muchos ítems)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartItem> items = new HashSet<>();
+
+    protected ShoppingCart() {}
+
+    public ShoppingCart(Client client) {
+        this.client = client;
     }
 
-    // Getters y Setters
+    // === Getters/Setters ===
+    public Long getId() { return id; }
+
+    public Client getClient() { return client; }
+    public void setClient(Client client) { this.client = client; }
+
+    public Set<CartItem> getItemsSet() { return items; }
+    public void setItemsSet(Set<CartItem> items) { this.items = items; }
+
+    /**
+     * Adapter para tests antiguos:
+     * Devuelve un Map<Product,Integer> construido desde el Set<CartItem>
+     */
+    @Transient
     public Map<Product, Integer> getItems() {
-        return items;
-    }
-
-    public void setItems(Map<Product, Integer> items) {
-        this.items = items;
-    }
-
-    // Funciones
-
-    // Agrega un producto al carrito (si ya existe suma la cantidad)
-    public void addProduct(Product product, int quantity) {
-        if (product != null && quantity > 0) {
-            items.put(product, items.getOrDefault(product, 0) + quantity);
+        Map<Product, Integer> map = new HashMap<>();
+        for (CartItem ci : items) {
+            map.put(ci.getProduct(), ci.getQuantity());
         }
+        return map;
     }
 
-    // Elimina un producto completamente del carrito
-    public void removeProduct(Product product) {
-        items.remove(product);
-    }
-
-    // Actualiza la cantidad de un producto
-    public void updateProduct(Product product, int quantity) {
-        if (items.containsKey(product)) {
-            if (quantity > 0) {
-                items.put(product, quantity);
-            } else {
-                items.remove(product); // Si la cantidad es 0 o menor, lo elimina
+    public void setItems(Map<Product, Integer> map) {
+        items.clear();
+        if (map != null) {
+            for (Map.Entry<Product, Integer> e : map.entrySet()) {
+                if (e.getKey() != null && e.getValue() != null && e.getValue() > 0) {
+                    items.add(new CartItem(this, e.getKey(), e.getValue()));
+                }
             }
         }
     }
 
-    // Calcula el total del carrito
-    public BigDecimal calculateTotal() {
-        BigDecimal total = BigDecimal.ZERO;
-        int quantity = 0;
-        for (Map.Entry<Product, Integer> entry : items.entrySet()) {
-            Product p = entry.getKey();
-            quantity = entry.getValue();
-            total = total.add(p.getPriceWithDiscount().multiply(BigDecimal.valueOf(quantity)));
-
+    // === Lógica de negocio ===
+    public void addProduct(Product product, int quantity) {
+        for (CartItem item : items) {
+            if (item.getProduct().equals(product)) {
+                item.setQuantity(item.getQuantity() + quantity);
+                return;
+            }
         }
-        return total;
+        items.add(new CartItem(this, product, quantity));
+    }
+
+    public void removeProduct(Product product) {
+        items.removeIf(item -> item.getProduct().equals(product));
+    }
+
+    public void updateProduct(Product product, int quantity) {
+        for (CartItem item : items) {
+            if (item.getProduct().equals(product)) {
+                if (quantity > 0) {
+                    item.setQuantity(quantity);
+                } else {
+                    items.remove(item);
+                }
+                break;
+            }
+        }
+    }
+
+    public BigDecimal calculateTotal() {
+        return items.stream()
+                .map(item -> item.getProduct().getPriceWithDiscount()
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

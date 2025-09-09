@@ -1,28 +1,29 @@
 package com.example.onlineStore.model;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-public class PayPalPayment implements IPaymentMethod {
+@Entity
+@Table(name = "paypal_payments")
+public class PayPalPayment extends Payment {
+
+    @Column(nullable = false, length = 120)
     private String emailAccount;
+
+    @Column(nullable = false, length = 120)
     private String password;
 
-    // Constructor
-    public PayPalPayment(String emailAccount, String password) {
+    protected PayPalPayment() {}
+
+    public PayPalPayment(BigDecimal amount, String emailAccount, String password) {
+        super(amount);
         this.emailAccount = emailAccount;
         this.password = password;
     }
 
-    // Getters y Setters
-    public String getEmailAccount() { return emailAccount; }
-    public void setEmailAccount(String emailAccount) { this.emailAccount = emailAccount; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    // Implementacion de la interfaz
     @Override
-    public boolean pay(BigDecimal amount) {
-        // Logica simulada de pago con PayPal
+    public boolean pay() {
+        // lógica simulada de pago con PayPal
         return true;
     }
 
@@ -30,4 +31,11 @@ public class PayPalPayment implements IPaymentMethod {
     public String getPaymentDetails() {
         return "PayPal account: " + emailAccount;
     }
+
+    // Getters/Setters
+    public String getEmailAccount() { return emailAccount; }
+    public void setEmailAccount(String emailAccount) { this.emailAccount = emailAccount; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }

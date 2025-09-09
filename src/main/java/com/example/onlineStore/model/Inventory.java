@@ -1,36 +1,45 @@
 package com.example.onlineStore.model;
+
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Entity
+@Table(name = "inventories")
 public class Inventory {
-    private List<Category> listCategories;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "inventory_id")
+    private List<Category> listCategories = new ArrayList<>();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_update", nullable = false)
     private Date lastUpdate;
 
-    // Constructor
-    public Inventory() {
-        this.listCategories = new ArrayList<>();
-        this.lastUpdate = new Date(); // Inicializa con la fecha actual
+    // ===== Constructores =====
+    protected Inventory() {}
+
+    public Inventory(List<Category> listCategories) {
+        this.listCategories = listCategories;
+        this.lastUpdate = new Date();
     }
 
-    // Getters y Setters
-    public List<Category> getListCategories() {
-        return listCategories;
-    }
-
+    // ===== Getters/Setters =====
+    public Long getId() { return id; }
+    public List<Category> getListCategories() { return listCategories; }
     public void setListCategories(List<Category> listCategories) {
         this.listCategories = listCategories;
+        this.lastUpdate = new Date();
     }
+    public Date getLastUpdate() { return lastUpdate; }
+    public void setLastUpdate(Date lastUpdate) { this.lastUpdate = lastUpdate; }
 
-    public Date getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
-    // Funciones
+    // Métodos de negocio (simplificados)
     public void addCategory(Category category) {
         listCategories.add(category);
         this.lastUpdate = new Date();
@@ -39,26 +48,5 @@ public class Inventory {
     public void removeCategory(Category category) {
         listCategories.remove(category);
         this.lastUpdate = new Date();
-    }
-
-    public void updateCategory(Category category) {
-        // Busca la categoría por nombre y reemplaza
-        for (int i = 0; i < listCategories.size(); i++) {
-            if (listCategories.get(i).getNameCategory().equals(category.getNameCategory())) {
-                listCategories.set(i, category);
-                this.lastUpdate = new Date();
-                break;
-            }
-        }
-    }
-
-    public Product searchProduct(String nameProduct) {
-        for (Category category : listCategories) {
-            Product found = category.findProduct(nameProduct);
-            if (found != null) {
-                return found;
-            }
-        }
-        return null; // No se encontró el producto
     }
 }
