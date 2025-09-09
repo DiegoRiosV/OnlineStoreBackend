@@ -1,22 +1,48 @@
 package com.example.onlineStore.model;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-public class CreditCardPayment implements IPaymentMethod {
+@Entity
+@Table(name = "credit_card_payments")
+public class CreditCardPayment extends Payment {
+
+    @Column(nullable = false, length = 20)
     private String cardNumber;
+
+    @Column(nullable = false, length = 100)
     private String cardHolder;
+
+    @Column(nullable = false, length = 10)
     private String expirationDate;
+
+    @Column(nullable = false, length = 5)
     private String cvv;
 
-    // Constructor
-    public CreditCardPayment(String cardNumber, String cardHolder, String expirationDate, String cvv) {
-        this.cardNumber = cardNumber;
-        this.cardHolder = cardHolder;
-        this.expirationDate = expirationDate;
-        this.cvv = cvv;
+    protected CreditCardPayment() {
+        super();
     }
 
-    // Getters y Setters
+    public CreditCardPayment(String cardNumber, String cardHolder,
+                             String expirationDate, String cvv) {
+        this(java.math.BigDecimal.ZERO, cardNumber, cardHolder, expirationDate, cvv);
+    }
+
+    public CreditCardPayment(BigDecimal zero, String cardNumber, String cardHolder, String expirationDate, String cvv) {
+    }
+
+    @Override
+    public boolean pay() {
+        // lógica simulada de pago con tarjeta
+        return true;
+    }
+
+    @Override
+    public String getPaymentDetails() {
+        return "CreditCard ****" + cardNumber.substring(cardNumber.length() - 4);
+    }
+
+    // Getters/Setters
     public String getCardNumber() { return cardNumber; }
     public void setCardNumber(String cardNumber) { this.cardNumber = cardNumber; }
 
@@ -28,16 +54,4 @@ public class CreditCardPayment implements IPaymentMethod {
 
     public String getCvv() { return cvv; }
     public void setCvv(String cvv) { this.cvv = cvv; }
-
-    // Implementacion de la interfaz
-    @Override
-    public boolean pay(BigDecimal amount) {
-        // Logica simulada de pago con tarjeta
-        return true;
-    }
-
-    @Override
-    public String getPaymentDetails() {
-        return "CreditCard: " + cardNumber;
-    }
 }

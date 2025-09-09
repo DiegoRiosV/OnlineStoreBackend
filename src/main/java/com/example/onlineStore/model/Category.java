@@ -1,69 +1,40 @@
 package com.example.onlineStore.model;
 
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "categories")
 public class Category {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, length = 100)
     private String nameCategory;
-    private List<Product> listProducts;
+
+    @Column(length = 255)
     private String description;
 
-    // Constructor
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> listProducts = new ArrayList<>();
+
+    // === Constructores ===
+    protected Category() {}
+
     public Category(String nameCategory, String description) {
         this.nameCategory = nameCategory;
         this.description = description;
-        this.listProducts = new ArrayList<>();
     }
 
-    // Getters y Setters
-    public String getNameCategory() {
-        return nameCategory;
-    }
-
-    public void setNameCategory(String nameCategory) {
-        this.nameCategory = nameCategory;
-    }
-
-    public List<Product> getListProducts() {
-        return listProducts;
-    }
-
-    public void setListProducts(List<Product> listProducts) {
-        this.listProducts = listProducts;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    // Funciones
-    public void addProduct(Product product) {
-        listProducts.add(product);
-    }
-
-    public void removeProduct(Product product) {
-        listProducts.remove(product);
-    }
-
-    public void updateProduct(Product product) {
-        for (int i = 0; i < listProducts.size(); i++) {
-            if (listProducts.get(i).getNameProduct().equals(product.getNameProduct())) {
-                listProducts.set(i, product);
-                break;
-            }
-        }
-    }
-
-    public Product findProduct(String nameProduct) {
-        for (Product product : listProducts) {
-            if (product.getNameProduct().equals(nameProduct)) {
-                return product;
-            }
-        }
-        return null; // No se encontró el producto
-    }
+    // === Getters y Setters ===
+    public Long getId() { return id; }
+    public String getNameCategory() { return nameCategory; }
+    public void setNameCategory(String nameCategory) { this.nameCategory = nameCategory; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public List<Product> getListProducts() { return listProducts; }
+    public void setListProducts(List<Product> listProducts) { this.listProducts = listProducts; }
 }

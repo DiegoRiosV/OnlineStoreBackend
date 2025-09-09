@@ -1,41 +1,34 @@
 package com.example.onlineStore.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "admins")
 public class Admin extends User {
-    private int idAdmin;
+
+    @Column(nullable = false, unique = true, length = 50)
     private String accessCode;
+
+    @OneToOne
+    @JoinColumn(name = "inventory_id", referencedColumnName = "id")
     private Inventory adminInventory;
 
-    // Constructor
+    // === Constructores ===
+
+    // Constructor sin argumentos requerido por JPA
+    protected Admin(String julian, String pantoja, String suarez, int i, String jps01, Inventory inventory) {}
+
     public Admin(String name, String firstLastName, String secondLastName,
-                 int idAdmin, String accessCode, Inventory adminInventory) {
+                 String accessCode, Inventory adminInventory) {
         super(name, firstLastName, secondLastName);
-        this.idAdmin = idAdmin;
         this.accessCode = accessCode;
         this.adminInventory = adminInventory;
     }
 
-    // Getters y Setters
-    public int getIdAdmin() {
-        return idAdmin;
-    }
+    // === Getters y Setters ===
+    public String getAccessCode() { return accessCode; }
+    public void setAccessCode(String accessCode) { this.accessCode = accessCode; }
 
-    public void setIdAdmin(int idAdmin) {
-        this.idAdmin = idAdmin;
-    }
-
-    public String getAccessCode() {
-        return accessCode;
-    }
-
-    public void setAccessCode(String accessCode) {
-        this.accessCode = accessCode;
-    }
-
-    public Inventory getAdminInventory() {
-        return adminInventory;
-    }
-
-    public void setAdminInventory(Inventory adminInventory) {
-        this.adminInventory = adminInventory;
-    }
+    public Inventory getAdminInventory() { return adminInventory; }
+    public void setAdminInventory(Inventory adminInventory) { this.adminInventory = adminInventory; }
 }
