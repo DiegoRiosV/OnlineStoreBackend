@@ -35,19 +35,27 @@ class ProductTest {
     @Test
     void testProductWithDiscount() {
         Product product = new Product("P002", "Mouse", "Wireless Mouse", new BigDecimal("50.00"), 20);
-        Date startDate = new Date();
+
+        // StartDate 1 segundo antes para asegurar que isActive() sea true
+        Date startDate = new Date(System.currentTimeMillis() - 1000);
+
         Calendar cal = Calendar.getInstance();
-        cal.setTime(startDate);
+        cal.setTime(new Date());
         cal.add(Calendar.DAY_OF_MONTH, 5);
         Date endDate = cal.getTime();
+
         // Crear descuento 10%
         Discount discount = new Discount("D1","Small Offer",new BigDecimal("0.10"), startDate,endDate);
         product.setDiscount(discount);
 
-        // Validar descuento aplicado
-        BigDecimal expectedPrice = product.getPrice().multiply(new BigDecimal("0.90"));
-        assertEquals(expectedPrice, product.getPriceWithDiscount());
+        // Validar descuento aplicado con 2 decimales
+        BigDecimal expectedPrice = new BigDecimal("45.00").setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal actualPrice = product.getPriceWithDiscount().setScale(2, BigDecimal.ROUND_HALF_UP);
+
+        assertEquals(expectedPrice, actualPrice);
     }
+
+
 
     @Test
     void testStockOperations() {
