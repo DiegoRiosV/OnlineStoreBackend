@@ -60,6 +60,15 @@ public class Product {
     public void setStock(int stock) {
         this.stock = stock;
     }
+    // Getter del descuento
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    // Setter del descuento
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
+    }
     public BigDecimal getPriceWithDiscount() {
         if (discount != null && discount.isActive()) {
             return price.multiply(BigDecimal.ONE.subtract(discount.getPercentage()));
