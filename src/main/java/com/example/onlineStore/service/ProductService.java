@@ -1,10 +1,7 @@
 package com.example.onlineStore.service;
 
-import com.example.onlineStore.model.Category;
 import com.example.onlineStore.model.Product;
-import com.example.onlineStore.repository.CategoryRepository;
 import com.example.onlineStore.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,12 +11,9 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
     }
 
     public List<Product> getAllProducts() {
@@ -31,11 +25,6 @@ public class ProductService {
     }
 
     public Product createProduct(Product product) {
-        // Asegurarse de que la categoría exista antes de guardar el producto
-        if (product.getCategory() != null && product.getCategory().getNameCategory() != null) {
-            Optional<Category> existingCategory = categoryRepository.findByNameCategory(product.getCategory().getNameCategory());
-            existingCategory.ifPresent(product::setCategory);
-        }
         return productRepository.save(product);
     }
 
@@ -43,18 +32,11 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Product not found with id: " + id));
 
-        // Actualizar detalles del producto
         product.setNameProduct(productDetails.getNameProduct());
         product.setDescription(productDetails.getDescription());
         product.setPrice(productDetails.getPrice());
         product.setStock(productDetails.getStock());
         product.setDiscount(productDetails.getDiscount());
-
-        // Actualizar la categoría si se proporciona una
-        if (productDetails.getCategory() != null && productDetails.getCategory().getNameCategory() != null) {
-            Optional<Category> existingCategory = categoryRepository.findByNameCategory(productDetails.getCategory().getNameCategory());
-            existingCategory.ifPresent(product::setCategory);
-        }
 
         return productRepository.save(product);
     }

@@ -20,14 +20,14 @@ public class Validation {
         return password.length() > 4 && hasLetter && hasDigit;
     }
 
-    public static boolean isADayGone(Date date) {
+    public static boolean isTimeGone(Date date) {
         if (date == null) return false;
         Date today = new Date();
         return date.before(today); // true si es hoy o una fecha futura
     }
 
-    public static boolean isNotADayGone(Date date) {
-        return !isADayGone(date);
+    public static boolean isNotTimeGone(Date date) {
+        return !isTimeGone(date);
     }
 
     public static boolean isValidEmail(String email) {

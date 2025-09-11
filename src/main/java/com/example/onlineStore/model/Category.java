@@ -18,8 +18,13 @@ public class Category {
     @Column(length = 255)
     private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = false
+    )
+    @JoinColumn(name = "category_id") // crea/usa FK category_id en products
     private List<Product> listProducts = new ArrayList<>();
+
 
     // === Constructores ===
     protected Category() {}

@@ -28,15 +28,12 @@ public class Product {
     @Column(nullable = false)
     private int stock;
 
-    // Muchas productos pertenecen a 1 categoría
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     // Muchos productos pueden compartir un mismo descuento (p.ej., “BLACKFRIDAY”)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
     private Discount discount;
+
+
 
     // ===== Constructores =====
     protected Product() { } // requerido por JPA
@@ -68,8 +65,6 @@ public class Product {
     public int getStock() { return stock; }
     public void setStock(int stock) { this.stock = stock; }
 
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
 
     public Discount getDiscount() { return discount; }
     public void setDiscount(Discount discount) { this.discount = discount; }
