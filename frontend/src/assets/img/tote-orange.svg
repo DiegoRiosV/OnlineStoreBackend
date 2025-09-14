@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="750" viewBox="0 0 1000 750">
+  <rect width="1000" height="750" fill="#f5efe6"/>
+  <g transform="translate(200,130)">
+    <rect x="0" y="80" width="600" height="420" rx="18" fill="#cf5b2b"/>
+    <path d="M120,100 C120,20 480,20 480,100" fill="none" stroke="#222" stroke-width="20"/>
+    <!-- lemons -->
+    <g>
+      <g transform="translate(110,220)"><ellipse cx="0" cy="0" rx="60" ry="40" fill="#f6d45c"/><circle cx="-25" cy="-5" r="6"/><circle cx="10" cy="8" r="6"/></g>
+      <g transform="translate(300,330)"><ellipse cx="0" cy="0" rx="60" ry="40" fill="#f6d45c"/><circle cx="-25" cy="-5" r="6"/><circle cx="10" cy="8" r="6"/></g>
+      <g transform="translate(470,220)"><ellipse cx="0" cy="0" rx="60" ry="40" fill="#f6d45c"/><circle cx="-25" cy="-5" r="6"/><circle cx="10" cy="8" r="6"/></g>
+    </g>
+  </g>
+</svg>
