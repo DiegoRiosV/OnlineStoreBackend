@@ -3,37 +3,22 @@ package com.example.onlineStore.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "credit_card_payments")
-public class CreditCardPayment extends Payment {
-
-    @Column(nullable = false, length = 20)
+public class CreditCardPayment implements IPaymentMethod {
     private String cardNumber;
-
-    @Column(nullable = false, length = 100)
     private String cardHolder;
-
-    @Column(nullable = false, length = 10)
     private String expirationDate;
-
-    @Column(nullable = false, length = 5)
     private String cvv;
 
-    protected CreditCardPayment() {
-        super();
-    }
-
-    public CreditCardPayment(String cardNumber, String cardHolder,
-                             String expirationDate, String cvv) {
-        this(java.math.BigDecimal.ZERO, cardNumber, cardHolder, expirationDate, cvv);
-    }
-
-    public CreditCardPayment(BigDecimal zero, String cardNumber, String cardHolder, String expirationDate, String cvv) {
+    public CreditCardPayment(String cardNumber, String cardHolder, String expiryDate, String cvv) {
+        this.cardNumber = cardNumber;
+        this.cardHolder = cardHolder;
+        this.expirationDate = expiryDate;
+        this.cvv = cvv;
     }
 
     @Override
-    public boolean pay() {
-        // lógica simulada de pago con tarjeta
+    public boolean pay(BigDecimal amount) {
+        System.out.println("Pagando " + amount + " con tarjeta ****" + cardNumber.substring(cardNumber.length() - 4));
         return true;
     }
 
@@ -42,16 +27,35 @@ public class CreditCardPayment extends Payment {
         return "CreditCard ****" + cardNumber.substring(cardNumber.length() - 4);
     }
 
-    // Getters/Setters
-    public String getCardNumber() { return cardNumber; }
-    public void setCardNumber(String cardNumber) { this.cardNumber = cardNumber; }
+    public String getCardHolder() {
+        return cardHolder;
+    }
 
-    public String getCardHolder() { return cardHolder; }
-    public void setCardHolder(String cardHolder) { this.cardHolder = cardHolder; }
+    public String getCardNumber() {
+        return cardNumber;
+    }
 
-    public String getExpirationDate() { return expirationDate; }
-    public void setExpirationDate(String expirationDate) { this.expirationDate = expirationDate; }
+    public String getCvv() {
+        return cvv;
+    }
 
-    public String getCvv() { return cvv; }
-    public void setCvv(String cvv) { this.cvv = cvv; }
+    public String getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
+    }
+
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
+    public void setExpirationDate(String expirationDate) {
+        this.expirationDate = expirationDate;
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.onlineStore.model;
 import java.util.Date;
+import java.math.BigDecimal;
 import java.time.DateTimeException;
 
 public class Validation {
@@ -33,5 +34,9 @@ public class Validation {
     public static boolean isValidEmail(String email) {
         if (email == null) return false;
         return email.matches("@");
+    }
+
+    public static boolean isValidAmount(BigDecimal amount) {
+        return amount != null && amount.compareTo(BigDecimal.ZERO) > 0;
     }
 }

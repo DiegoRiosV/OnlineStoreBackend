@@ -15,10 +15,15 @@ public abstract class Payment {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
+    // Cada Payment tiene su IPaymentMethod (transient porque no se persiste directamente)
+    @Transient
+    protected IPaymentMethod method;
+
     protected Payment() {}
 
     protected Payment(BigDecimal amount) {
         this.amount = amount;
+        this.method = createPaymentMethod(); // Factory method
     }
 
     public Long getId() { return id; }
@@ -26,7 +31,16 @@ public abstract class Payment {
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    // Métodos abstractos → las subclases deben implementarlos
-    public abstract boolean pay();
-    public abstract String getPaymentDetails();
+    // Métodos abstractos → cada subclase define su método de pago
+    protected abstract IPaymentMethod createPaymentMethod();
+
+    public boolean pay() {
+        if(method == null) throw new IllegalStateException("No se ha asignado método de pago");
+        return method.pay(amount);
+    }
+
+    public String getPaymentDetails() {
+        if(method == null) return "No se ha asignado método de pago";
+        return method.getPaymentDetails();
+    }
 }
