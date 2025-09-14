@@ -1,6 +1,8 @@
 package com.example.onlineStore.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+
 
 @Entity
 @Table(name = "clients")
@@ -45,4 +47,30 @@ public class Client extends User {
     public void setPassword(String password) { this.password = password; }
     public Payment getPaymentMethod() { return paymentMethod; }
     public void setPaymentMethod(Payment paymentMethod) { this.paymentMethod = paymentMethod; }
+    //String... params recibe 0 o mas parametros
+    public void createPayment(String type, BigDecimal amount, String... params) {
+        switch(type.toLowerCase()) {
+            case "paypal":
+                if(params.length < 2) throw new IllegalArgumentException("Faltan parámetros para PayPal");
+                this.paymentMethod = new CreatorPayPalPayment(amount, params[0], params[1]);
+                break;
+            case "creditcard":
+                if(params.length < 4) throw new IllegalArgumentException("Faltan parámetros para CreditCard");
+                this.paymentMethod = new CreatorCreditCardPayment(amount, params[0], params[1], params[2], params[3]);
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo de pago no soportado");
+        }
+    }
+
+    // Hacer pago
+    public boolean makePayment() {
+        if(paymentMethod == null) throw new IllegalStateException("No se ha asignado método de pago");
+        return paymentMethod.pay();
+    }
+
+    public String getPaymentDetails() {
+        if(paymentMethod == null) return "No se ha asignado método de pago";
+        return paymentMethod.getPaymentDetails();
+    }
 }
