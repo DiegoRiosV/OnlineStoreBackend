@@ -29,19 +29,9 @@ public class Validation {
         return !isTimeGone(date);
     }
 
-    public static boolean isValidEmail(String email) {
-        if (email == null) return false;
-        return email.matches("@");
-    }
-
     public static boolean isValidAmount(BigDecimal amount) {
         return amount != null && amount.compareTo(BigDecimal.ZERO) > 0;
     }
-    public static boolean isValidAmount(BigDecimal amount) {
-        if (amount == null) return false;
-        return amount.compareTo(BigDecimal.ZERO) > 0;
-    }
-
     // Validar número de tarjeta (16 dígitos)
     public static boolean isValidCreditCardNumber(String number) {
         if (number == null) return false;
