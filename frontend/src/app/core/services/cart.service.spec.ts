@@ -1,51 +1,84 @@
 import { TestBed } from '@angular/core/testing';
 import { CartService } from './cart.service';
+import { CartItem } from '../models/product.model';
 
-describe('CartService v1', () => {
+describe('CartService', () => {
   let service: CartService;
+  const mockItem: CartItem = {
+    productId: '1',
+    title: 'Test Product',
+    price: 100,
+    imageUrl: 'test.png',
+    qty: 1
+  };
 
   beforeEach(() => {
+    localStorage.clear(); 
     TestBed.configureTestingModule({});
     service = TestBed.inject(CartService);
   });
 
-  it('starts with 0 items', () => {
-    expect(service.count).toBe(0);
-    expect(service.snapshot).toEqual([]);
+  it('should start empty', (done) => {
+    service.items$.subscribe(items => {
+      expect(items.length).toBe(0);
+      done();
+    });
   });
 
-  it('increments count when adding an item', () => {
-    service.add({ productId: 'p1', title: 'A', price: 10, imageUrl: 'x', qty: 1 });
-    expect(service.count).toBe(1);
-
-    service.add({ productId: 'p1', title: 'A', price: 10, imageUrl: 'x', qty: 1 });
-    expect(service.count).toBe(2);
-    expect(service.snapshot[0].qty).toBe(2);
+  it('should add a new item', (done) => {
+    service.add(mockItem);
+    service.items$.subscribe(items => {
+      expect(items.length).toBe(1);
+      expect(items[0].title).toBe('Test Product');
+      done();
+    });
   });
 
-  it('setQty sets exact quantity and removes when <=0', () => {
-    service.add({ productId: 'p1', title: 'A', price: 10, imageUrl: 'x', qty: 1 });
-    service.setQty('p1', 5);
-    expect(service.snapshot[0].qty).toBe(5);
-    expect(service.count).toBe(5);
-
-    service.setQty('p1', 0);
-    expect(service.count).toBe(0);
-    expect(service.snapshot.length).toBe(0);
+  it('should increase qty if item already exists', (done) => {
+    service.add(mockItem);
+    service.add(mockItem);
+    service.items$.subscribe(items => {
+      expect(items[0].qty).toBe(2);
+      done();
+    });
   });
 
-  it('remove deletes the item', () => {
-    service.add({ productId: 'p2', title: 'B', price: 20, imageUrl: 'y', qty: 2 });
-    service.remove('p2');
-    expect(service.count).toBe(0);
+  it('should update qty (minimum 1)', (done) => {
+    service.add(mockItem);
+    service.update(mockItem.productId, 5);
+    service.items$.subscribe(items => {
+      expect(items[0].qty).toBe(5);
+    });
+    service.update(mockItem.productId, 0);
+    service.items$.subscribe(items => {
+      expect(items[0].qty).toBe(1);
+      done();
+    });
   });
 
-  it('clear empties cart', () => {
-    service.add({ productId: 'p1', title: 'A', price: 10, imageUrl: 'x', qty: 1 });
-    service.add({ productId: 'p2', title: 'B', price: 20, imageUrl: 'y', qty: 2 });
+  it('should remove item', (done) => {
+    service.add(mockItem);
+    service.remove(mockItem.productId);
+    service.items$.subscribe(items => {
+      expect(items.length).toBe(0);
+      done();
+    });
+  });
+
+  it('should clear cart', (done) => {
+    service.add(mockItem);
     service.clear();
-    expect(service.count).toBe(0);
-    expect(service.snapshot).toEqual([]);
+    service.items$.subscribe(items => {
+      expect(items.length).toBe(0);
+      done();
+    });
   });
 
+  it('should calculate total$', (done) => {
+    service.add({ ...mockItem, qty: 2 });
+    service.total$.subscribe(total => {
+      expect(total).toBe(200);
+      done();
+    });
+  });
 });

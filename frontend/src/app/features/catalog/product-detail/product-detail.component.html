@@ -1,0 +1,40 @@
+<ng-container *ngIf="product$ | async as p">
+  <main class="container product">
+    <figure class="gallery">
+      <img [src]="p.imageUrl" [alt]="p.title" />
+    </figure>
+
+    <aside class="panel">
+      <div class="info">
+        <img [src]="p.imageUrl" alt="" class="thumb">
+        <div>
+          <h2>{{ p.title }}</h2>
+          <div class="muted">Color: {{ p.color || '—' }}</div>
+        </div>
+      </div>
+
+      <div class="price"> {{ p.price | number:'1.2-2' }} Bs</div>
+
+      <div class="qty">
+        <button (click)="dec()">-</button>
+        <input type="number" min="1" [(ngModel)]="qty" />
+        <button (click)="inc()">+</button>
+      </div>
+
+      <div class="input">
+        <label>Ingresar código de promoción</label>
+        <input placeholder="P. ej., OFERTA50"/>
+      </div>
+
+      <table class="table">
+        <tr>
+          <td>Total estimado</td>
+          <td style="text-align:right">{{ (qty * p.price) | number:'1.2-2' }} Bs</td>
+        </tr>
+      </table>
+
+      <button class="btn" (click)="add(p); openDrawer()">Página de pago</button>
+      <button class="btn secondary" (click)="openDrawer()">Ver carrito</button>
+    </aside>
+  </main>
+</ng-container>

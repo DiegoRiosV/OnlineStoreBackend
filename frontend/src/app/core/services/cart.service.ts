@@ -1,45 +1,38 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { CartItem } from '../models/product.model';
+
+const CART_KEY = 'biba.cart.v1';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private items = new Map<string | number, CartItem>();
+  private _items$ = new BehaviorSubject<CartItem[]>(this.load());
+  readonly items$ = this._items$.asObservable();
+  readonly count$ = this.items$.pipe(map(items => items.reduce((s,i)=> s+i.qty, 0)));
+  readonly total$ = this.items$.pipe(map(items => items.reduce((s,i)=> s+i.qty*i.price, 0)));
 
-  private readonly countSub = new BehaviorSubject<number>(0);
-  readonly count$ = this.countSub.asObservable();
+  private load(): CartItem[] {
+    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; }
+  }
+  private save(v: CartItem[]) { localStorage.setItem(CART_KEY, JSON.stringify(v)); }
 
-  get count(): number { return this.countSub.value; }
-  get snapshot(): CartItem[] { return [...this.items.values()]; }
-
-  add(item: CartItem): void {
-    const curr = this.items.get(item.productId);
-    const qty = (curr?.qty ?? 0) + (item.qty ?? 1);
-    this.items.set(item.productId, { ...item, qty });
-    this.recalcCount();
+  add(item: CartItem) {
+    const list = [...this._items$.value];
+    const idx = list.findIndex(x => x.productId === item.productId);
+    if (idx > -1) list[idx] = { ...list[idx], qty: list[idx].qty + item.qty };
+    else list.push(item);
+    this._items$.next(list); this.save(list);
   }
 
-  /** Establece cantidad exacta (si llega <=0 elimina) */
-  setQty(productId: CartItem['productId'], qty: number): void {
-    if (qty <= 0) { this.remove(productId); return; }
-    const curr = this.items.get(productId);
-    if (!curr) return;
-    this.items.set(productId, { ...curr, qty });
-    this.recalcCount();
+  update(productId: CartItem['productId'], qty: number) {
+    const list = this._items$.value.map(x => x.productId === productId ? { ...x, qty: Math.max(1, qty) } : x);
+    this._items$.next(list); this.save(list);
   }
 
-  remove(productId: CartItem['productId']): void {
-    this.items.delete(productId);
-    this.recalcCount();
+  remove(productId: CartItem['productId']) {
+    const list = this._items$.value.filter(x => x.productId !== productId);
+    this._items$.next(list); this.save(list);
   }
 
-  clear(): void {
-    this.items.clear();
-    this.recalcCount();
-  }
-
-  private recalcCount(): void {
-    const total = [...this.items.values()].reduce((a, b) => a + b.qty, 0);
-    this.countSub.next(total);
-  }
+  clear(){ this._items$.next([]); this.save([]); }
 }
