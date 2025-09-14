@@ -5,13 +5,11 @@ import java.time.DateTimeException;
 
 public class Validation {
 
-    // Valida que el username tenga más de 4 caracteres
     public static boolean isValidUsername(String username) {
         if (username == null) return false;
         return username.length() > 4;
     }
 
-    // Valida que el password tenga más de 4 caracteres y contenga letras y números
     public static boolean isValidPassword(String password) {
         if (password == null) return false;
 
@@ -31,12 +29,21 @@ public class Validation {
         return !isTimeGone(date);
     }
 
-    public static boolean isValidEmail(String email) {
-        if (email == null) return false;
-        return email.matches("@");
-    }
-
     public static boolean isValidAmount(BigDecimal amount) {
         return amount != null && amount.compareTo(BigDecimal.ZERO) > 0;
     }
+    // Validar número de tarjeta (16 dígitos)
+    public static boolean isValidCreditCardNumber(String number) {
+        if (number == null) return false;
+        return number.matches("\\d{16}");
+    }
+
+    public static boolean isValidPayPalEmail(String email) {
+        if (email == null) return false;
+        return email.contains("@") && email.contains(".");
+    }
+    public static boolean hasRequiredParams(String[] params, int expectedLength) {
+        return params != null && params.length >= expectedLength;
+    }
+
 }

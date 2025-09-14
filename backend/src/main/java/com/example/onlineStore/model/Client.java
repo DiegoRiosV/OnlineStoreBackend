@@ -12,7 +12,7 @@ public class Client extends User {
     private String idClient;
 
     @Column(nullable = false, unique = true, length = 120)
-    private String mail;
+    private String email;
 
     @Column(nullable = false, length = 120)
     private String password;
@@ -29,10 +29,10 @@ public class Client extends User {
     protected Client() { }
 
     public Client(String name, String firstLastName, String secondLastName,
-                  String idClient, String mail, String password) {
+                  String idClient, String email, String password) {
         super(name, firstLastName, secondLastName);
         this.idClient = idClient;
-        this.mail = mail;
+        this.email = email;
         this.password = password;
     }
 
@@ -41,21 +41,34 @@ public class Client extends User {
     public void setIdClient(String idClient) { this.idClient = idClient; }
     public ShoppingCart getCart() { return cart; }
     public void setCart(ShoppingCart cart) { this.cart = cart; }
-    public String getMail() { return mail; }
-    public void setMail(String mail) { this.mail = mail; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
     public Payment getPaymentMethod() { return paymentMethod; }
     public void setPaymentMethod(Payment paymentMethod) { this.paymentMethod = paymentMethod; }
     //String... params recibe 0 o mas parametros
     public void createPayment(String type, BigDecimal amount, String... params) {
+        if (!Validation.isValidAmount(amount)) {
+            throw new IllegalArgumentException("Monto inválido");
+        }
         switch(type.toLowerCase()) {
             case "paypal":
-                if(params.length < 2) throw new IllegalArgumentException("Faltan parámetros para PayPal");
+                if (!Validation.hasRequiredParams(params, 2)) {
+                    throw new IllegalArgumentException("Faltan parámetros para PayPal");
+                }
+                if (!Validation.isValidPayPalEmail(params[0])) {
+                    throw new IllegalArgumentException("Email de PayPal inválido");
+                }
                 this.paymentMethod = new CreatorPayPalPayment(amount, params[0], params[1]);
                 break;
             case "creditcard":
-                if(params.length < 4) throw new IllegalArgumentException("Faltan parámetros para CreditCard");
+                if (!Validation.hasRequiredParams(params, 4)) {
+                    throw new IllegalArgumentException("Faltan parámetros para CreditCard");
+                }
+                if (!Validation.isValidCreditCardNumber(params[0])) {
+                    throw new IllegalArgumentException("Número de tarjeta inválido");
+                }
                 this.paymentMethod = new CreatorCreditCardPayment(amount, params[0], params[1], params[2], params[3]);
                 break;
             default:
