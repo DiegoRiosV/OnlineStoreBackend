@@ -1,0 +1,43 @@
+<aside class="cart-drawer" [class.open]="openDrawer" role="dialog" aria-label="Carrito">
+  <div class="drawer-topbar">
+    <strong>Carrito ({{ (items$ | async)?.length || 0 }} ítem)</strong>
+    <button class="icon-btn light" (click)="close()" aria-label="Cerrar">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <div class="empty" *ngIf="(items$ | async)?.length === 0">Tu carrito está vacío.</div>
+
+    <div *ngFor="let p of (items$ | async)" class="cart-card">
+      <div class="cart-card-left">
+        <img [src]="p.imageUrl" [alt]="p.title" class="thumb">
+        <div>
+          <div class="title">{{ p.title }}</div>
+          <div class="price"> {{ p.price | number:'1.2-2' }} Bs </div>
+        </div>
+      </div>
+      <div class="cart-card-actions">
+        <div class="qtybox">
+          <button (click)="update(p.productId, p.qty-1)" aria-label="Disminuir">
+            <i class="bi bi-dash"></i>
+          </button>
+          <span>{{ p.qty }}</span>
+          <button (click)="update(p.productId, p.qty+1)" aria-label="Aumentar">
+            <i class="bi bi-plus"></i>
+          </button>
+        </div>
+        <button class="icon-btn danger" (click)="remove(p.productId)" aria-label="Eliminar">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <div class="total">
+      <span>Total estimado</span>
+      <span> {{ (total$ | async) | number:'1.2-2' }} Bs</span>
+    </div>
+    <button class="btn dark">Página de pago</button>
+    <button class="btn secondary" (click)="close()">Ver carrito</button>
+  </div>
+</aside>
