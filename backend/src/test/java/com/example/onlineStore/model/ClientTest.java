@@ -81,5 +81,37 @@ class ClientTest {
         assertTrue(client.getPaymentMethod().pay());
 
         assertEquals("CreditCard ****7777", client.getPaymentMethod().getPaymentDetails());
-    }
+        @Test
+        void testInvalidCreditCardThrowsException() {
+        Client client = new Client("Diego", "Rios", "Valverde", "C003", "mail@example.com", "password123");
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+                client.createPayment("creditcard", new BigDecimal("200.00"), "123", "Diego Rios", "12/25", "123");
+        });
+
+        assertTrue(exception.getMessage().contains("Número de tarjeta inválido"));
+        }
+
+        @Test
+        void testInvalidPayPalEmailThrowsException() {
+        Client client = new Client("Diego", "Rios", "Valverde", "C003", "mail@example.com", "password123");
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+                client.createPayment("paypal", new BigDecimal("100.00"), "invalid-email", "password123");
+        });
+
+        assertTrue(exception.getMessage().contains("Email de PayPal inválido"));
+        }
+
+         @Test
+        void testInvalidAmountThrowsException() {
+        Client client = new Client("Diego", "Rios", "Valverde", "C003", "mail@example.com", "password123");
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+                client.createPayment("creditcard", new BigDecimal("-50.00"), "4444555566667777", "Diego Rios", "12/25", "123");
+        });
+
+        assertTrue(exception.getMessage().contains("Monto inválido"));
+        }
+
 }
