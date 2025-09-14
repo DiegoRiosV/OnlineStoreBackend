@@ -51,18 +51,29 @@ public class Client extends User {
     public void createPayment(String type, BigDecimal amount, String... params) {
         switch(type.toLowerCase()) {
             case "paypal":
-                if(!Validation.hasRequiredParams(params, 2)) {
+                if (!Validation.hasRequiredParams(params, 2)) {
                     throw new IllegalArgumentException("Faltan parámetros para PayPal");
+                }
+                if (!Validation.isValidPayPalEmail(params[0])) {
+                    throw new IllegalArgumentException("Email de PayPal inválido");
+                }
+                if (!Validation.isValidAmount(amount)) {
+                    throw new IllegalArgumentException("Monto inválido");
                 }
                 this.paymentMethod = new CreatorPayPalPayment(amount, params[0], params[1]);
                 break;
             case "creditcard":
-                if(!Validation.hasRequiredParams(params, 4)) {
+                if (!Validation.hasRequiredParams(params, 4)) {
                     throw new IllegalArgumentException("Faltan parámetros para CreditCard");
+                }
+                if (!Validation.isValidCreditCardNumber(params[0])) {
+                    throw new IllegalArgumentException("Número de tarjeta inválido");
+                }
+                if (!Validation.isValidAmount(amount)) {
+                    throw new IllegalArgumentException("Monto inválido");
                 }
                 this.paymentMethod = new CreatorCreditCardPayment(amount, params[0], params[1], params[2], params[3]);
                 break;
-
             default:
                 throw new IllegalArgumentException("Tipo de pago no soportado");
         }
