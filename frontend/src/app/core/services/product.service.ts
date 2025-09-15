@@ -9,13 +9,14 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  getAllProducts(): Observable<Product[]> {
+  getAll(): Observable<Product[]> {
     return this.http.get<Product[]>(this.ProductUrl);
   }
 
-  getProductById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.ProductUrl}/${id}`);
+  getById(id: string | number): Observable<Product> {
+  return this.http.get<Product>(`${this.ProductUrl}/${id}`);
   }
+
 
   createProduct(product: Product): Observable<Product> {
     return this.http.post<Product>(this.ProductUrl, product);
