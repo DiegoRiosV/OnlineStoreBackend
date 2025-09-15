@@ -86,4 +86,11 @@ describe('CartService', () => {
       done();
     });
   });
+
+  it('should persist items to localStorage', () => {
+  service.add(mockItem);
+  const saved = JSON.parse(localStorage.getItem('biba.cart.v1') || '[]');
+  expect(saved.length).toBe(1);
+  expect(saved[0].productId).toBe(mockItem.productId);
+  });
 });
