@@ -22,3 +22,17 @@ export class ProductService {
   GetProductbyId(id:number):Observable<any>{
     return this.htpp.get(`${this.ProductUrl}/id/${id}`);
   }
+
+  CreateProduct(Product:any): Observable<any>{
+    return this.http.post(`${this.ProductUrl}/add, Product`);
+  }
+
+  UpdateProduct(id: number, Product: any): Observable<any> {
+    return this.http.put(`{this.ProductUrl}/update/${id}, Product`);
+  }
+
+  deleteProduct(id: number): Observable<any> {
+    return this.http.delete(`${this.ProductUrl}/delete/${id}`);
+  }
+
+
