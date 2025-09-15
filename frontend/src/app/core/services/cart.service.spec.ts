@@ -43,12 +43,17 @@ describe('CartService', () => {
     });
   });
 
-  it('should update qty (minimum 1)', (done) => {
+  it('should update qty', (done) => {
     service.add(mockItem);
     service.update(mockItem.productId, 5);
     service.items$.subscribe(items => {
       expect(items[0].qty).toBe(5);
+      done();
     });
+  });
+
+  it('should enforce minimum qty of 1', (done) => {
+    service.add(mockItem);
     service.update(mockItem.productId, 0);
     service.items$.subscribe(items => {
       expect(items[0].qty).toBe(1);
@@ -80,5 +85,12 @@ describe('CartService', () => {
       expect(total).toBe(200);
       done();
     });
+  });
+
+  it('should persist items to localStorage', () => {
+  service.add(mockItem);
+  const saved = JSON.parse(localStorage.getItem('biba.cart.v1') || '[]');
+  expect(saved.length).toBe(1);
+  expect(saved[0].productId).toBe(mockItem.productId);
   });
 });
