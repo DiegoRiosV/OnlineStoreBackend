@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { CartService } from './cart.service';
 import { CartItem } from '../models/product.model';
+import { firstValueFrom } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 describe('CartService', () => {
   let service: CartService;
@@ -92,5 +94,11 @@ describe('CartService', () => {
   const saved = JSON.parse(localStorage.getItem('biba.cart.v1') || '[]');
   expect(saved.length).toBe(1);
   expect(saved[0].productId).toBe(mockItem.productId);
+  });
+
+  it('should handle product with zero price in total$', async () => {
+    service.add({ ...mockItem, productId: '1', price: 0, qty: 3 });
+    const total = await firstValueFrom(service.total$.pipe(take(1)));
+    expect(total).toBe(0);
   });
 });
