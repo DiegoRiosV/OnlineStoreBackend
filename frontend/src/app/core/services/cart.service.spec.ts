@@ -43,12 +43,17 @@ describe('CartService', () => {
     });
   });
 
-  it('should update qty (minimum 1)', (done) => {
+  it('should update qty', (done) => {
     service.add(mockItem);
     service.update(mockItem.productId, 5);
     service.items$.subscribe(items => {
       expect(items[0].qty).toBe(5);
+      done();
     });
+  });
+
+  it('should enforce minimum qty of 1', (done) => {
+    service.add(mockItem);
     service.update(mockItem.productId, 0);
     service.items$.subscribe(items => {
       expect(items[0].qty).toBe(1);
