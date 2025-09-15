@@ -19,20 +19,20 @@ export class ProductService {
     return this.htpp.get<Product[]>(this.ProductUrl);
   }
 
-  GetProductbyId(id:number):Observable<any>{
-    return this.htpp.get(`${this.ProductUrl}/id/${id}`);
-  }
+ GetProductbyId(id:number):Observable<any>{
+     return this.htpp.get(`${this.ProductUrl}/id/${id}`);
+   }
 
-  CreateProduct(Product:any): Observable<any>{
-    return this.http.post(`${this.ProductUrl}/add, Product`);
-  }
+   CreateProduct(Product:any): Observable<any>{
+     return this.http.post(`${this.ProductUrl}/add, Product`);
+   }
 
-  UpdateProduct(id: number, Product: any): Observable<any> {
-    return this.http.put(`{this.ProductUrl}/update/${id}, Product`);
-  }
+   UpdateProduct(id: number, Product: any): Observable<any> {
+     return this.http.put(`{this.ProductUrl}/update/${id}, Product`);
+   }
 
-  deleteProduct(id: number): Observable<any> {
-    return this.http.delete(`${this.ProductUrl}/delete/${id}`);
-  }
+   deleteProduct(id: number): Observable<any> {
+     return this.http.delete(`${this.ProductUrl}/delete/${id}`);
+   }
 
 
