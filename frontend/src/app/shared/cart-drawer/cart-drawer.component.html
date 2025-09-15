@@ -37,7 +37,7 @@
       <span>Total estimado</span>
       <span> {{ (total$ | async) | number:'1.2-2' }} Bs</span>
     </div>
-    <button class="btn dark">Página de pago</button>
+    <button class="btn dark"(click)="openPayment()">Página de pago</button>
     <button class="btn secondary" (click)="close()">Ver carrito</button>
   </div>
 </aside>
