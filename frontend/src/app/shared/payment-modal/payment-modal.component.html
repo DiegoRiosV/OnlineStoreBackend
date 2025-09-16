@@ -3,27 +3,49 @@
     <h2>Método de pago</h2>
     <p>Total a pagar: {{ total }} Bs</p>
 
-    <div class="payment-option">
-      <h3>PayPal</h3>
-      <input type="email" placeholder="Correo PayPal" [(ngModel)]="email">
-      <input type="password" placeholder="Contraseña" [(ngModel)]="password">
-      <button (click)="createPayPalPayment()">Crear Pago PayPal</button>
+    <!-- Selector -->
+    <div class="method-selector">
+      <button 
+        [class.active]="selectedMethod === 'paypal'" 
+        (click)="selectedMethod = 'paypal'"
+        class="btn-paypal">
+        PayPal
+      </button>
+      <button 
+        [class.active]="selectedMethod === 'creditcard'" 
+        (click)="selectedMethod = 'creditcard'"
+        class="btn-creditcard">
+        Tarjeta de Crédito
+      </button>
     </div>
 
-    <hr>
+    <!-- PayPal -->
+    @if (selectedMethod === 'paypal') {
+      <div class="payment-option">
+        <input type="email" placeholder="Correo PayPal" [(ngModel)]="email">
+        <input type="password" placeholder="Contraseña" [(ngModel)]="password">
+        <button class="btn-paypal" (click)="processPayPalPayment()">
+          Pagar ahora con PayPal
+        </button>
+      </div>
+    }
 
-    <div class="payment-option">
-      <h3>Tarjeta de Crédito</h3>
-      <input type="text" placeholder="Número de tarjeta" [(ngModel)]="cardNumber">
-      <input type="text" placeholder="Titular" [(ngModel)]="cardHolder">
-      <input type="text" placeholder="Fecha expiración (MM/AA)" [(ngModel)]="expirationDate">
-      <input type="text" placeholder="CVV" [(ngModel)]="cvv">
-      <button (click)="createCreditCardPayment()">Crear Pago Tarjeta</button>
-    </div>
+    <!-- Credit Card -->
+    @if (selectedMethod === 'creditcard') {
+      <div class="payment-option">
+        <input type="text" placeholder="Número de tarjeta" [(ngModel)]="cardNumber">
+        <input type="text" placeholder="Titular" [(ngModel)]="cardHolder">
+        <input type="text" placeholder="Fecha expiración (MM/AA)" [(ngModel)]="expirationDate">
+        <input type="text" placeholder="CVV" [(ngModel)]="cvv">
+        <button class="btn-creditcard" (click)="processCreditCardPayment()">
+          Pagar ahora con Tarjeta
+        </button>
+      </div>
+    }
 
-    <div class="actions">
-      <button class="btn btn-success" (click)="makePayment()">Pagar ahora</button>
-      <button class="btn btn-secondary" (click)="close.emit()">Cancelar</button>
+    <!-- Botón Volver -->
+    <div class="back-btn">
+      <button class="btn btn-secondary" (click)="close.emit()">Volver</button>
     </div>
   </div>
 </div>

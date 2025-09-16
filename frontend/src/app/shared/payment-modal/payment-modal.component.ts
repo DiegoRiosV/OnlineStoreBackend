@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-payment-modal',
   standalone: true,
-  imports: [FormsModule],   
+  imports: [FormsModule],
   templateUrl: './payment-modal.component.html',
   styleUrls: ['./payment-modal.component.css']
 })
@@ -14,8 +14,13 @@ export class PaymentModalComponent {
   @Input() clientId!: number; 
   @Output() close = new EventEmitter<void>();
 
+  selectedMethod: 'paypal' | 'creditcard' | null = null;
+
+  // PayPal
   email: string = '';
   password: string = '';
+
+  // CreditCard
   cardNumber: string = '';
   cardHolder: string = '';
   expirationDate: string = '';
@@ -23,7 +28,7 @@ export class PaymentModalComponent {
 
   constructor(private http: HttpClient) {}
 
-  createPayPalPayment() {
+  processPayPalPayment() {
     const body = {
       type: 'paypal',
       amount: this.total,
@@ -32,11 +37,15 @@ export class PaymentModalComponent {
 
     this.http.post(`/payments/create/${this.clientId}`, body)
       .subscribe(() => {
-        alert('Pago PayPal creado con éxito');
+        this.http.post(`/payments/pay/${this.clientId}`, {})
+          .subscribe((resp: any) => {
+            alert(resp);
+            this.close.emit();
+          });
       });
   }
 
-  createCreditCardPayment() {
+  processCreditCardPayment() {
     const body = {
       type: 'creditcard',
       amount: this.total,
@@ -45,15 +54,11 @@ export class PaymentModalComponent {
 
     this.http.post(`/payments/create/${this.clientId}`, body)
       .subscribe(() => {
-        alert('Pago con tarjeta creado con éxito');
-      });
-  }
-
-  makePayment() {
-    this.http.post(`/payments/pay/${this.clientId}`, {})
-      .subscribe((resp: any) => {
-        alert(resp);
-        this.close.emit();
+        this.http.post(`/payments/pay/${this.clientId}`, {})
+          .subscribe((resp: any) => {
+            alert(resp);
+            this.close.emit();
+          });
       });
   }
 }
