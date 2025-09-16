@@ -1,6 +1,8 @@
 package com.example.onlineStore.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,15 +20,10 @@ public class Category {
     @Column(length = 255)
     private String description;
 
-    @OneToMany(
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            orphanRemoval = false
-    )
-    @JoinColumn(name = "category_id") // crea/usa FK category_id en products
+    @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
     private List<Product> listProducts = new ArrayList<>();
 
-
-    // === Constructores ===
     protected Category() {}
 
     public Category(String nameCategory, String description) {
@@ -34,7 +31,6 @@ public class Category {
         this.description = description;
     }
 
-    // === Getters y Setters ===
     public Long getId() { return id; }
     public String getNameCategory() { return nameCategory; }
     public void setNameCategory(String nameCategory) { this.nameCategory = nameCategory; }

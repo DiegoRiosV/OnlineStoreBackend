@@ -10,9 +10,9 @@
 
     <div *ngFor="let p of (items$ | async)" class="cart-card">
       <div class="cart-card-left">
-        <img [src]="p.imageUrl" [alt]="p.title" class="thumb">
+        <img [src]="p.imageUrl" [alt]="p.nameProduct" class="thumb">
         <div>
-          <div class="title">{{ p.title }}</div>
+          <div class="title">{{ p.nameProduct }}</div>
           <div class="price"> {{ p.price | number:'1.2-2' }} Bs </div>
         </div>
       </div>
@@ -37,7 +37,13 @@
       <span>Total estimado</span>
       <span> {{ (total$ | async) | number:'1.2-2' }} Bs</span>
     </div>
-    <button class="btn dark">Página de pago</button>
+    <button class="btn dark" (click)="openPayment()">Página de pago</button>
+    <app-payment-modal
+      *ngIf="showPayment"
+      [total]="(total$ | async)!"
+      [clientId]="1"
+      (close)="closePayment()">
+    </app-payment-modal>
     <button class="btn secondary" (click)="close()">Ver carrito</button>
   </div>
 </aside>

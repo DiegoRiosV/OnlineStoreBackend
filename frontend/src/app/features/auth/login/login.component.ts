@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { Client } from '../../../core/models/client.model';
 
 @Component({
   selector: 'app-login',
@@ -30,20 +31,16 @@ export class LoginComponent {
   hidePassword = true;
   errorMessage = '';
 
+  loggedClient: any = null; // aquí guardamos el cliente validado
+
   constructor(private http: HttpClient, private router: Router) {}
 
   onSubmit() {
-  this.http.post<{ token: string }>('/api/auth/login', {
-    email: this.email,
-    password: this.password
-    }).subscribe({
-      next: (res) => {
-        localStorage.setItem('token', res.token);
-        this.router.navigate(['/']); // home
-      },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Credenciales inválidas';
-      }
+    this.http.post<Client>('http://localhost:8080/clients/login',
+      { email: this.email, password: this.password }
+    ).subscribe({
+      next: client => { this.loggedClient = client; this.router.navigate(['/']); },
+      error: _ => this.errorMessage = 'Credenciales inválidas'
     });
   }
 

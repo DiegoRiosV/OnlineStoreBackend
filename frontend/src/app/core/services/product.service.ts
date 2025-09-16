@@ -1,17 +1,32 @@
+// core/services/product.service.ts
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { Product } from '../models/product.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private mock: Product[] = [
-    { id: 'tote-orange', title: 'Tote Naranja', price: 15, imageUrl: 'assets/img/tote-orange.svg', color: 'Naranja' },
-    { id: 'tote-green',  title: 'Tote Verde',   price: 15, imageUrl: 'assets/img/tote-green.svg',  color: 'Verde'   },
-    { id: 'tote-special',title: 'Edición Especial', price: 18, imageUrl: 'assets/img/tote-green.svg', color: 'Verde' }
-  ];
-  getAll(): Observable<Product[]> { return of(this.mock); }
-  getById(id: string | number): Observable<Product> {
-    const p = this.mock.find(x => String(x.id) === String(id))!;
-    return of(p);
+  private ProductUrl = 'http://localhost:8080/api/products';
+
+  constructor(private http: HttpClient) {}
+
+  getAll(): Observable<Product[]> {
+    return this.http.get<Product[]>(this.ProductUrl);
+  }
+
+  getById(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.ProductUrl}/${id}`);
+  }
+
+  createProduct(product: Product): Observable<Product> {
+    return this.http.post<Product>(this.ProductUrl, product);
+  }
+
+  updateProduct(id: number, product: Product): Observable<Product> {
+    return this.http.put<Product>(`${this.ProductUrl}/${id}`, product);
+  }
+
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.ProductUrl}/${id}`);
   }
 }

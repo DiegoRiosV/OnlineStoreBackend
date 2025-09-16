@@ -1,0 +1,51 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <h2>Método de pago</h2>
+    <p>Total a pagar: {{ total }} Bs</p>
+
+    <!-- Selector -->
+    <div class="method-selector">
+      <button 
+        [class.active]="selectedMethod === 'paypal'" 
+        (click)="selectedMethod = 'paypal'"
+        class="btn-paypal">
+        PayPal
+      </button>
+      <button 
+        [class.active]="selectedMethod === 'creditcard'" 
+        (click)="selectedMethod = 'creditcard'"
+        class="btn-creditcard">
+        Tarjeta de Crédito
+      </button>
+    </div>
+
+    <!-- PayPal -->
+    @if (selectedMethod === 'paypal') {
+      <div class="payment-option">
+        <input type="email" placeholder="Correo PayPal" [(ngModel)]="email">
+        <input type="password" placeholder="Contraseña" [(ngModel)]="password">
+        <button class="btn-paypal" (click)="processPayPalPayment()">
+          Pagar ahora con PayPal
+        </button>
+      </div>
+    }
+
+    <!-- Credit Card -->
+    @if (selectedMethod === 'creditcard') {
+      <div class="payment-option">
+        <input type="text" placeholder="Número de tarjeta" [(ngModel)]="cardNumber">
+        <input type="text" placeholder="Titular" [(ngModel)]="cardHolder">
+        <input type="text" placeholder="Fecha expiración (MM/AA)" [(ngModel)]="expirationDate">
+        <input type="text" placeholder="CVV" [(ngModel)]="cvv">
+        <button class="btn-creditcard" (click)="processCreditCardPayment()">
+          Pagar ahora con Tarjeta
+        </button>
+      </div>
+    }
+
+    <!-- Botón Volver -->
+    <div class="back-btn">
+      <button class="btn btn-secondary" (click)="close.emit()">Volver</button>
+    </div>
+  </div>
+</div>
