@@ -12,37 +12,45 @@ public class ShoppingCart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación 1:1 con Client
     @OneToOne
     @JoinColumn(name = "client_id", unique = true)
     private Client client;
 
-    // Relación con CartItem (carrito tiene muchos ítems)
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> items = new HashSet<>();
 
-    protected ShoppingCart() {}
+    protected ShoppingCart() {
+        // requerido por JPA
+    }
 
     public ShoppingCart(Client client) {
         this.client = client;
     }
 
     public static ShoppingCart create() {
-        return new ShoppingCart();   // ← permitido aquí dentro
+        return new ShoppingCart();
     }
-    // === Getters/Setters ===
-    public Long getId() { return id; }
 
-    public Client getClient() { return client; }
-    public void setClient(Client client) { this.client = client; }
+    public Long getId() {
+        return id;
+    }
 
-    public Set<CartItem> getItemsSet() { return items; }
-    public void setItemsSet(Set<CartItem> items) { this.items = items; }
+    public Client getClient() {
+        return client;
+    }
 
-    /**
-     * Adapter para tests antiguos:
-     * Devuelve un Map<Product,Integer> construido desde el Set<CartItem>
-     */
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Set<CartItem> getItemsSet() {
+        return items;
+    }
+
+    public void setItemsSet(Set<CartItem> items) {
+        this.items = items;
+    }
+
     @Transient
     public Map<Product, Integer> getItems() {
         Map<Product, Integer> map = new HashMap<>();
@@ -63,7 +71,6 @@ public class ShoppingCart {
         }
     }
 
-    // === Lógica de negocio ===
     public void addProduct(Product product, int quantity) {
         for (CartItem item : items) {
             if (item.getProduct().equals(product)) {

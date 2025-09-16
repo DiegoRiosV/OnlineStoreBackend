@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "payments")
-@Inheritance(strategy = InheritanceType.JOINED) // cada subclase tendrá su propia tabla
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Payment {
 
     @Id
@@ -15,32 +15,43 @@ public abstract class Payment {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
-    // Cada Payment tiene su IPaymentMethod (transient porque no se persiste directamente)
     @Transient
     protected IPaymentMethod method;
 
-    protected Payment() {}
+    protected Payment() {
+        // requerido por JPA
+    }
 
     protected Payment(BigDecimal amount) {
         this.amount = amount;
-        this.method = createPaymentMethod(); // Factory method
+        this.method = createPaymentMethod();
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-    // Métodos abstractos → cada subclase define su metodo de pago
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
     protected abstract IPaymentMethod createPaymentMethod();
 
     public boolean pay() {
-        if(method == null) throw new IllegalStateException("No se ha asignado método de pago");
+        if (method == null) {
+            throw new IllegalStateException("No se ha asignado método de pago");
+        }
         return method.pay(amount);
     }
 
     public String getPaymentDetails() {
-        if(method == null) return "No se ha asignado método de pago";
+        if (method == null) {
+            return "No se ha asignado método de pago";
+        }
         return method.getPaymentDetails();
     }
 }

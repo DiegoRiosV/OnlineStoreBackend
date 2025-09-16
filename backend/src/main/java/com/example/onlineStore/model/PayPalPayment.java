@@ -1,9 +1,9 @@
 package com.example.onlineStore.model;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 public class PayPalPayment implements IPaymentMethod {
+
     private String emailAccount;
     private String password;
 
@@ -26,12 +26,12 @@ public class PayPalPayment implements IPaymentMethod {
         return emailAccount;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setEmailAccount(String emailAccount) {
         this.emailAccount = emailAccount;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {

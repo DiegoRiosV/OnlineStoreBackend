@@ -4,6 +4,7 @@ import com.example.onlineStore.model.Client;
 import com.example.onlineStore.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,24 +17,37 @@ import java.util.Map;
 @RestController
 @RequestMapping("/clients")
 public class ClientController {
+
     private final ClientService clientService;
+
     @Autowired
-    public ClientController(ClientService clientService) { this.clientService = clientService; }
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     @PostMapping("/create")
-    public Client createClient(@RequestBody Client client) { return clientService.saveClient(client); }
+    public Client createClient(@RequestBody Client client) {
+        return clientService.saveClient(client);
+    }
 
     @GetMapping("/{clientId}")
-    public Client getClient(@PathVariable Long clientId) { return clientService.getClientById(clientId); }
+    public Client getClient(@PathVariable Long clientId) {
+        return clientService.getClientById(clientId);
+    }
 
     @GetMapping("/all")
-    public List<Client> getAllClients() { return clientService.getAllClients(); }
+    public List<Client> getAllClients() {
+        return clientService.getAllClients();
+    }
 
     @DeleteMapping("/delete/{clientId}")
-    public String deleteClient(@PathVariable Long clientId) { clientService.deleteClient(clientId); return "Cliente eliminado correctamente"; }
+    public String deleteClient(@PathVariable Long clientId) {
+        clientService.deleteClient(clientId);
+        return "Cliente eliminado correctamente";
+    }
 
     @PostMapping("/login")
-    public Client login(@RequestBody Map<String,String> body) {
+    public Client login(@RequestBody Map<String, String> body) {
         return clientService.login(body.get("email"), body.get("password"));
     }
 }

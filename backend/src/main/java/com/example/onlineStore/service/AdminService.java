@@ -19,7 +19,6 @@ public class AdminService {
         this.inventoryRepository = inventoryRepository;
     }
 
-    // ===== CRUD =====
     public List<Admin> getAll() {
         return adminRepository.findAll();
     }
@@ -30,19 +29,20 @@ public class AdminService {
     }
 
     public Admin create(Admin admin) {
-        // accessCode único
         adminRepository.findByAccessCode(admin.getAccessCode())
-                .ifPresent(a -> { throw new IllegalStateException("Access code already exists: " + a.getAccessCode()); });
+                .ifPresent(a -> {
+                    throw new IllegalStateException("Access code already exists: " + a.getAccessCode());
+                });
 
-        // Vincular inventory si vino seteado
         if (admin.getAdminInventory() != null && admin.getAdminInventory().getId() != null) {
             Long invId = admin.getAdminInventory().getId();
             Inventory inv = inventoryRepository.findById(invId)
                     .orElseThrow(() -> new IllegalStateException("Inventory not found with id: " + invId));
 
-            // Garantizar 1:1
             adminRepository.findByAdminInventory_Id(invId)
-                    .ifPresent(a -> { throw new IllegalStateException("Inventory already assigned to admin id: " + a.getId()); });
+                    .ifPresent(a -> {
+                        throw new IllegalStateException("Inventory already assigned to admin id: " + a.getId());
+                    });
 
             admin.setAdminInventory(inv);
         } else {
@@ -55,23 +55,21 @@ public class AdminService {
     public Admin update(Long id, Admin details) {
         Admin admin = getById(id);
 
-        // accessCode único si cambia
         if (!admin.getAccessCode().equals(details.getAccessCode())) {
             adminRepository.findByAccessCode(details.getAccessCode())
-                    .ifPresent(a -> { throw new IllegalStateException("Access code already exists: " + a.getAccessCode()); });
+                    .ifPresent(a -> {
+                        throw new IllegalStateException("Access code already exists: " + a.getAccessCode());
+                    });
             admin.setAccessCode(details.getAccessCode());
         }
 
-        // Actualizar nombres heredados de User si procede
         admin.setName(details.getName());
         admin.setFirstLastName(details.getFirstLastName());
         admin.setSecondLastName(details.getSecondLastName());
 
-        // Reasignar inventory si vino distinto
         if (details.getAdminInventory() != null && details.getAdminInventory().getId() != null) {
             Long newInvId = details.getAdminInventory().getId();
 
-            // Si es el mismo, no hacemos nada
             if (admin.getAdminInventory() == null || !admin.getAdminInventory().getId().equals(newInvId)) {
                 Inventory inv = inventoryRepository.findById(newInvId)
                         .orElseThrow(() -> new IllegalStateException("Inventory not found with id: " + newInvId));
@@ -86,7 +84,6 @@ public class AdminService {
                 admin.setAdminInventory(inv);
             }
         } else {
-            // Permitir quitar el inventory
             admin.setAdminInventory(null);
         }
 
@@ -98,7 +95,6 @@ public class AdminService {
         adminRepository.delete(admin);
     }
 
-    // ===== Operación dedicada para set/swap de inventory =====
     public Admin setInventory(Long adminId, Long inventoryId) {
         Admin admin = getById(adminId);
         Inventory inv = inventoryRepository.findById(inventoryId)

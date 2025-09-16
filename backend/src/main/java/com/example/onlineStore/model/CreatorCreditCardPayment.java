@@ -13,7 +13,9 @@ public class CreatorCreditCardPayment extends Payment {
     private String expiryDate;
     private String cvv;
 
-    protected CreatorCreditCardPayment() {} // JPA necesita constructor sin args
+    protected CreatorCreditCardPayment() {
+        // requerido por JPA
+    }
 
     public CreatorCreditCardPayment(BigDecimal amount, String cardNumber, String cardHolder, String expiryDate, String cvv) {
         super(amount);
@@ -21,7 +23,7 @@ public class CreatorCreditCardPayment extends Payment {
         this.cardHolder = cardHolder;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
-        this.method = createPaymentMethod(); // Inicializa el metodo
+        this.method = createPaymentMethod();
     }
 
     @Override

@@ -20,7 +20,6 @@ public class InventoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    // ===== CRUD básico =====
     public List<Inventory> getAll() {
         return inventoryRepository.findAll();
     }
@@ -40,11 +39,7 @@ public class InventoryService {
 
     public Inventory replaceCategories(Long inventoryId, List<Long> categoryIds) {
         Inventory inv = getById(inventoryId);
-
-        // Cargar categorías válidas
         List<Category> categories = categoryRepository.findAllById(categoryIds);
-
-        // Reemplazar lista
         inv.setListCategories(categories);
         inv.setLastUpdate(new Date());
         return inventoryRepository.save(inv);
@@ -55,27 +50,23 @@ public class InventoryService {
         inventoryRepository.delete(inv);
     }
 
-    // ===== Operaciones de negocio =====
     public Inventory addCategory(Long inventoryId, Long categoryId) {
         Inventory inv = getById(inventoryId);
         Category cat = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalStateException("Category not found with id: " + categoryId));
 
-        // Evitar duplicados
         boolean exists = inv.getListCategories().stream()
                 .anyMatch(c -> c.getId().equals(cat.getId()));
         if (!exists) {
-            inv.addCategory(cat);       // actualiza lastUpdate adentro
+            inv.addCategory(cat);
         }
         return inventoryRepository.save(inv);
     }
 
     public Inventory removeCategory(Long inventoryId, Long categoryId) {
         Inventory inv = getById(inventoryId);
-
         inv.getListCategories().removeIf(c -> c.getId().equals(categoryId));
         inv.setLastUpdate(new Date());
-
         return inventoryRepository.save(inv);
     }
 }

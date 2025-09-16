@@ -10,16 +10,16 @@ public class Discount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // PK autogenerada por Hibernate
+    private Long id;
 
     @Column(name = "discount_code", unique = true, nullable = false, length = 50)
-    private String idDiscount; // código de negocio, único (ej: "BLACKFRIDAY")
+    private String idDiscount;
 
     @Column(nullable = false, length = 120)
     private String nameDiscount;
 
     @Column(nullable = false, precision = 5, scale = 2)
-    private BigDecimal percentage; // ej. 0.10 = 10%
+    private BigDecimal percentage;
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
@@ -29,7 +29,6 @@ public class Discount {
     @Column(nullable = false)
     private Date endDate;
 
-    // ===== Constructores =====
     protected Discount() {
         // requerido por JPA
     }
@@ -43,25 +42,50 @@ public class Discount {
         this.endDate = endDate;
     }
 
-    // ===== Getters y Setters =====
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getIdDiscount() { return idDiscount; }
-    public void setIdDiscount(String idDiscount) { this.idDiscount = idDiscount; }
+    public String getIdDiscount() {
+        return idDiscount;
+    }
 
-    public String getNameDiscount() { return nameDiscount; }
-    public void setNameDiscount(String nameDiscount) { this.nameDiscount = nameDiscount; }
+    public void setIdDiscount(String idDiscount) {
+        this.idDiscount = idDiscount;
+    }
 
-    public BigDecimal getPercentage() { return percentage; }
-    public void setPercentage(BigDecimal percentage) { this.percentage = percentage; }
+    public String getNameDiscount() {
+        return nameDiscount;
+    }
 
-    public Date getStartDate() { return startDate; }
-    public void setStartDate(Date startDate) { this.startDate = startDate; }
+    public void setNameDiscount(String nameDiscount) {
+        this.nameDiscount = nameDiscount;
+    }
 
-    public Date getEndDate() { return endDate; }
-    public void setEndDate(Date endDate) { this.endDate = endDate; }
+    public BigDecimal getPercentage() {
+        return percentage;
+    }
 
-    // ===== Lógica de negocio =====
+    public void setPercentage(BigDecimal percentage) {
+        this.percentage = percentage;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     public boolean isActive() {
         Date now = new Date();
         return now.after(startDate) && now.before(endDate);

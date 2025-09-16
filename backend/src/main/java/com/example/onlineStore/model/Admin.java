@@ -13,8 +13,9 @@ public class Admin extends User {
     @JoinColumn(name = "inventory_id", referencedColumnName = "id", unique = true)
     private Inventory adminInventory;
 
-    // === Constructores ===
-    protected Admin() { } // requerido por JPA (ahora sí sin argumentos)
+    protected Admin() {
+        // requerido por JPA
+    }
 
     public Admin(String name, String firstLastName, String secondLastName,
                  String accessCode, Inventory adminInventory) {
@@ -29,10 +30,19 @@ public class Admin extends User {
         this(name, firstLastName, secondLastName, accessCode, adminInventory);
     }
 
-    // === Getters y Setters ===
-    public String getAccessCode() { return accessCode; }
-    public void setAccessCode(String accessCode) { this.accessCode = accessCode; }
+    public String getAccessCode() {
+        return accessCode;
+    }
 
-    public Inventory getAdminInventory() { return adminInventory; }
-    public void setAdminInventory(Inventory adminInventory) { this.adminInventory = adminInventory; }
+    public void setAccessCode(String accessCode) {
+        this.accessCode = accessCode;
+    }
+
+    public Inventory getAdminInventory() {
+        return adminInventory;
+    }
+
+    public void setAdminInventory(Inventory adminInventory) {
+        this.adminInventory = adminInventory;
+    }
 }
