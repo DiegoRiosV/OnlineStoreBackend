@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { NgFor, NgIf, AsyncPipe, DecimalPipe } from '@angular/common';
+import { CartService } from '../../core/services/cart.service';
 import { Observable } from 'rxjs';
 import { CartItem } from '../../core/models/product.model';
-import { CartService } from '../../core/services/cart.service';
-import {PaymentModalComponent} from './../payment-modal/payment-modal.component'
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-cart-drawer',
-  imports: [PaymentModalComponent],
+  standalone: true,
+  imports: [NgFor, NgIf, AsyncPipe, DecimalPipe, FormsModule],
   templateUrl: './cart-drawer.component.html',
   styleUrls: ['./cart-drawer.component.css']
 })
 export class CartDrawerComponent implements OnInit {
+  openDrawer = false;
+
   items$!: Observable<CartItem[]>;
   total$!: Observable<number>;
-
-  openDrawer: boolean = false;   
-  showPayment: boolean = false;  
 
   constructor(private cart: CartService) {}
 
@@ -23,23 +24,8 @@ export class CartDrawerComponent implements OnInit {
     this.total$ = this.cart.total$;
   }
 
-  openPayment() {
-    this.showPayment = true;
-  }
-
-  closePayment() {
-    this.showPayment = false;
-  }
-
-  closeDrawer() {
-    this.openDrawer = false; 
-  }
-  processPayment(method: string) {
-    console.log('Método elegido:', method);
-
-    //this.http.post('http://localhost:8081/api/payments', { method, items: ... })
-
-    this.closePayment();
-    alert(`Pago con ${method} procesado exitosamente 🚀`);
-  }
+  @HostListener('open') onOpen(){ this.openDrawer = true; }
+  close(){ this.openDrawer = false; }
+  remove(id: any){ this.cart.remove(id); }
+  update(id: any, qty: number){ this.cart.update(id, qty); }
 }
