@@ -1,4 +1,3 @@
-// product-detail.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AsyncPipe, DecimalPipe, NgIf } from '@angular/common';
@@ -19,6 +18,7 @@ import { Product } from '../../../core/models/product.model';
 })
 export class ProductDetailComponent implements OnInit {
   qty = 1;
+  promoCode = '';              // 👈 NUEVO
   product$!: Observable<Product>;
 
   constructor(
@@ -29,7 +29,7 @@ export class ProductDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.product$ = this.route.paramMap.pipe(
-      map(params => Number(params.get('id'))),  // asegura number
+      map(params => Number(params.get('id'))),
       switchMap(id => this.api.getById(id))
     );
   }
@@ -37,14 +37,36 @@ export class ProductDetailComponent implements OnInit {
   dec(){ this.qty = Math.max(1, this.qty - 1); }
   inc(){ this.qty = this.qty + 1; }
 
+  // (tu método original; lo dejo por compatibilidad)
   add(p: Product){
     this.cart.add({
-      productId: p.id,
+      productId: p.id!,
       nameProduct: p.nameProduct,
       price: p.price,
       imageUrl: p.imageUrl,
       qty: this.qty
     });
+  }
+
+  // 👇 NUEVO: añade y si hay código lo aplica
+  addThenApply(p: Product){
+    this.cart.addThenApply({
+      productId: p.id!,
+      nameProduct: p.nameProduct,
+      price: p.price,
+      imageUrl: p.imageUrl,
+      qty: this.qty
+    }, this.promoCode);
+    this.openDrawer();
+  }
+
+  // 👇 NUEVO: aplica código directamente desde el detalle
+  applyCode(p: Product){
+    const code = this.promoCode?.trim();
+    if (code) {
+      this.cart.applyCode(p.id!, code);
+      this.openDrawer();
+    }
   }
 
   openDrawer(){
