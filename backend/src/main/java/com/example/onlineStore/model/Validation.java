@@ -40,7 +40,7 @@ public class Validation {
 
     public static boolean isValidPayPalEmail(String email) {
         if (email == null) return false;
-        return email.contains("@") && email.contains(".");
+        return email.contains("@");
     }
     public static boolean hasRequiredParams(String[] params, int expectedLength) {
         return params != null && params.length >= expectedLength;
