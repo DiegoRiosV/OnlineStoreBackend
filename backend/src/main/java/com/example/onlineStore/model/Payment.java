@@ -31,7 +31,7 @@ public abstract class Payment {
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    // Métodos abstractos → cada subclase define su método de pago
+    // Métodos abstractos → cada subclase define su metodo de pago
     protected abstract IPaymentMethod createPaymentMethod();
 
     public boolean pay() {
