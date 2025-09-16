@@ -10,6 +10,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
@@ -25,7 +26,9 @@ public class CategoryService {
 
     public Category create(Category category) {
         categoryRepository.findByNameCategory(category.getNameCategory())
-                .ifPresent(c -> { throw new IllegalStateException("Category name already exists: " + c.getNameCategory()); });
+                .ifPresent(c -> {
+                    throw new IllegalStateException("Category name already exists: " + c.getNameCategory());
+                });
         return categoryRepository.save(category);
     }
 
@@ -33,7 +36,9 @@ public class CategoryService {
         Category cat = getById(id);
         if (!cat.getNameCategory().equals(details.getNameCategory())) {
             categoryRepository.findByNameCategory(details.getNameCategory())
-                    .ifPresent(c -> { throw new IllegalStateException("Category name already exists: " + c.getNameCategory()); });
+                    .ifPresent(c -> {
+                        throw new IllegalStateException("Category name already exists: " + c.getNameCategory());
+                    });
         }
         cat.setNameCategory(details.getNameCategory());
         cat.setDescription(details.getDescription());

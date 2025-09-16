@@ -25,15 +25,24 @@ public class CartController {
         this.cartRepo = cartRepo;
     }
 
-    public static class AddItemRequest { public Long cartId; public Long productId; public int quantity; }
-    public static class UpdateQuantityRequest { public int quantity; }
-    public static class ApplyCodeRequest { public String code; }
+    public static class AddItemRequest {
+        public Long cartId;
+        public Long productId;
+        public int quantity;
+    }
 
-    /** Lista carrito con PRECIO EFECTIVO */
+    public static class UpdateQuantityRequest {
+        public int quantity;
+    }
+
+    public static class ApplyCodeRequest {
+        public String code;
+    }
+
     @GetMapping("/{cartId}")
     public List<CartItemDTO> getCart(@PathVariable Long cartId) {
         return service.getCart(cartId).stream()
-                .map(this::toDtoEffective)   // 👈 aquí
+                .map(this::toDtoEffective)
                 .toList();
     }
 
@@ -85,7 +94,6 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
-    // ---- aplicar/quitar código ----
     @PostMapping("/{cartId}/items/{productId}/apply-code")
     public ResponseEntity<CartItemDTO> applyCode(@PathVariable Long cartId,
                                                  @PathVariable Long productId,
@@ -100,7 +108,6 @@ public class CartController {
         CartItem updated = service.removeCode(cartId, productId);
         return ResponseEntity.ok(toDtoEffective(updated));
     }
-
 
     private CartItemDTO toDtoEffective(CartItem entity) {
         Product p = entity.getProduct();

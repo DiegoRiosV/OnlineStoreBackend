@@ -13,7 +13,7 @@ public class Validation {
     public static boolean isValidPassword(String password) {
         if (password == null) return false;
         boolean hasLetter = password.matches(".*[a-zA-Z].*");
-        boolean hasDigit  = password.matches(".*\\d.*");
+        boolean hasDigit = password.matches(".*\\d.*");
         return password.length() > 4 && hasLetter && hasDigit;
     }
 
@@ -23,7 +23,9 @@ public class Validation {
         return date.before(today);
     }
 
-    public static boolean isNotTimeGone(Date date) { return !isTimeGone(date); }
+    public static boolean isNotTimeGone(Date date) {
+        return !isTimeGone(date);
+    }
 
     public static boolean isValidAmount(BigDecimal amount) {
         return amount != null && amount.compareTo(BigDecimal.ZERO) > 0;
@@ -43,14 +45,14 @@ public class Validation {
         return params != null && params.length >= expectedLength;
     }
 
-    // ---- helpers para descuentos ----
-    /** true si start == null o start <= hoy */
     public static boolean hasStarted(Date start) {
         return start == null || !start.after(new Date());
     }
+
     public static boolean notExpired(Date end) {
         return end == null || !end.before(new Date());
     }
+
     public static boolean isValidPercentage(BigDecimal pct) {
         return pct != null && pct.compareTo(BigDecimal.ZERO) > 0
                 && pct.compareTo(new BigDecimal("100")) <= 0;

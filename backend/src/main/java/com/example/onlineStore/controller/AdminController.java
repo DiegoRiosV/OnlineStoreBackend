@@ -36,13 +36,9 @@ public class AdminController {
     public ResponseEntity<?> create(@RequestBody Admin admin) {
         try {
             Admin created = service.create(admin);
-            return new ResponseEntity<>(created, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalStateException e) {
-            // 409 si es conflicto por unicidad; 400 en otros casos simples
-            String msg = e.getMessage() != null ? e.getMessage() : "Invalid admin data";
-            HttpStatus status = msg.contains("already exists") || msg.contains("already assigned")
-                    ? HttpStatus.CONFLICT : HttpStatus.BAD_REQUEST;
-            return ResponseEntity.status(status).body(msg);
+            return buildConflictOrBadRequest(e, "Invalid admin data");
         }
     }
 
@@ -51,9 +47,8 @@ public class AdminController {
         try {
             return ResponseEntity.ok(service.update(id, details));
         } catch (IllegalStateException e) {
-            String msg = e.getMessage() != null ? e.getMessage() : "Update failed";
-            HttpStatus status = msg.contains("already exists") || msg.contains("already assigned")
-                    ? HttpStatus.CONFLICT : HttpStatus.NOT_FOUND;
+            String msg = messageOrDefault(e, "Update failed");
+            HttpStatus status = isConflictMessage(msg) ? HttpStatus.CONFLICT : HttpStatus.NOT_FOUND;
             return ResponseEntity.status(status).body(msg);
         }
     }
@@ -63,7 +58,7 @@ public class AdminController {
         try {
             return ResponseEntity.ok(service.setInventory(id, inventoryId));
         } catch (IllegalStateException e) {
-            String msg = e.getMessage() != null ? e.getMessage() : "Inventory set failed";
+            String msg = messageOrDefault(e, "Inventory set failed");
             HttpStatus status = msg.contains("already assigned") ? HttpStatus.CONFLICT : HttpStatus.BAD_REQUEST;
             return ResponseEntity.status(status).body(msg);
         }
@@ -86,5 +81,26 @@ public class AdminController {
         } catch (IllegalStateException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // ---------------------
+    // Helpers privados
+    // ---------------------
+
+    private ResponseEntity<?> buildConflictOrBadRequest(IllegalStateException e, String defaultMsg) {
+        String msg = messageOrDefault(e, defaultMsg);
+        HttpStatus status = isConflictMessage(msg) ? HttpStatus.CONFLICT : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(msg);
+    }
+
+    private boolean isConflictMessage(String msg) {
+        if (msg == null) return false;
+        String lower = msg.toLowerCase();
+        return lower.contains("already exists") || lower.contains("already assigned");
+        // Añade aquí otros indicadores de conflicto si tu servicio los usa.
+    }
+
+    private String messageOrDefault(IllegalStateException e, String fallback) {
+        return (e.getMessage() != null && !e.getMessage().isBlank()) ? e.getMessage() : fallback;
     }
 }

@@ -1,9 +1,9 @@
 package com.example.onlineStore.model;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 public class CreditCardPayment implements IPaymentMethod {
+
     private String cardNumber;
     private String cardHolder;
     private String expirationDate;

@@ -23,20 +23,15 @@ public class DiscountServiceImpl implements DiscountService {
     public Optional<Discount> validateForProduct(String code, Product product) {
         if (code == null || code.isBlank()) return Optional.empty();
 
-        // 👇 aquí estaba el fallo
         Optional<Discount> od = repo.findByIdDiscount(code.trim());
         if (od.isEmpty()) return Optional.empty();
 
         Discount d = od.get();
 
-        // vigencia (inclusiva, según tu Validation)
         if (!Validation.hasStarted(d.getStartDate())) return Optional.empty();
-        if (!Validation.notExpired(d.getEndDate()))  return Optional.empty();
-
-        // porcentaje válido (0..100)
+        if (!Validation.notExpired(d.getEndDate())) return Optional.empty();
         if (!Validation.isValidPercentage(d.getPercentage())) return Optional.empty();
 
-        // el producto debe estar enlazado al mismo código
         if (product.getDiscount() == null) return Optional.empty();
         if (!code.equalsIgnoreCase(product.getDiscount().getIdDiscount())) return Optional.empty();
 

@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED) // permite que Admin y Client hereden
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // clave primaria
+    private Long id;
 
     @Column(nullable = false, length = 80)
     private String name;
@@ -20,10 +20,9 @@ public class User {
     @Column(nullable = false, length = 80)
     private String secondLastName;
 
-    // === Constructores ===
-
-    // Requerido por JPA (sin parámetros)
-    protected User() {}
+    protected User() {
+        // requerido por JPA
+    }
 
     public User(String name, String firstLastName, String secondLastName) {
         this.name = name;
@@ -31,7 +30,6 @@ public class User {
         this.secondLastName = secondLastName;
     }
 
-    // === Getters y Setters ===
     public Long getId() {
         return id;
     }
@@ -39,6 +37,7 @@ public class User {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -46,6 +45,7 @@ public class User {
     public String getFirstLastName() {
         return firstLastName;
     }
+
     public void setFirstLastName(String firstLastName) {
         this.firstLastName = firstLastName;
     }
@@ -53,6 +53,7 @@ public class User {
     public String getSecondLastName() {
         return secondLastName;
     }
+
     public void setSecondLastName(String secondLastName) {
         this.secondLastName = secondLastName;
     }

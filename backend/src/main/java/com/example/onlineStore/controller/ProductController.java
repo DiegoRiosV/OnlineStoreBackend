@@ -22,7 +22,6 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // ===== GETs con DTO =====
     @GetMapping
     public List<ProductDTO> getAllProducts() {
         return productService.getAllProducts().stream().map(this::toDto).toList();
@@ -35,11 +34,10 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ===== CRUD sin cambios =====
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         Product createdProduct = productService.createProduct(product);
-        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     @PutMapping("/{id}")
@@ -62,26 +60,29 @@ public class ProductController {
         }
     }
 
-    // ===== descuento por código =====
     @PutMapping("/{id}/discount/{code}")
     public ResponseEntity<Product> attachDiscount(@PathVariable Long id, @PathVariable String code) {
-        try { return ResponseEntity.ok(productService.attachDiscount(id, code)); }
-        catch (IllegalStateException e){ return ResponseEntity.notFound().build(); }
+        try {
+            return ResponseEntity.ok(productService.attachDiscount(id, code));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}/discount")
     public ResponseEntity<Product> removeDiscount(@PathVariable Long id) {
-        try { return ResponseEntity.ok(productService.removeDiscount(id)); }
-        catch (IllegalStateException e){ return ResponseEntity.notFound().build(); }
+        try {
+            return ResponseEntity.ok(productService.removeDiscount(id));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // ===== Mapper =====
     private ProductDTO toDto(Product p) {
         return new ProductDTO(
                 p.getId(),
                 p.getNameProduct(),
-                // si no tienes imageUrl en la entidad, usa null aquí:
-                p.getImageUrl(),    // o null
+                p.getImageUrl(),
                 p.getDescription(),
                 p.getPrice(),
                 p.getStock()

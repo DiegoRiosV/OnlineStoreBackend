@@ -6,6 +6,7 @@ import com.example.onlineStore.repository.DiscountRepository;
 import com.example.onlineStore.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -40,8 +41,7 @@ public class ProductService {
         product.setDescription(productDetails.getDescription());
         product.setPrice(productDetails.getPrice());
         product.setStock(productDetails.getStock());
-        // Si tu entidad tiene imageUrl, deja esta línea; si no, elimínala:
-        // product.setImageUrl(productDetails.getImageUrl());
+        product.setImageUrl(productDetails.getImageUrl());
         product.setDiscount(productDetails.getDiscount());
 
         return productRepository.save(product);
@@ -50,7 +50,9 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         boolean exists = productRepository.existsById(id);
-        if (!exists) throw new IllegalStateException("Product with id " + id + " does not exist");
+        if (!exists) {
+            throw new IllegalStateException("Product with id " + id + " does not exist");
+        }
         productRepository.deleteById(id);
     }
 
@@ -59,7 +61,6 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    // Asignar / quitar descuento por CÓDIGO (e.g., "0000")
     @Transactional
     public Product attachDiscount(Long productId, String code) {
         Product p = productRepository.findById(productId)

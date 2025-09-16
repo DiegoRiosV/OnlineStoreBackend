@@ -36,13 +36,12 @@ public class InventoryController {
     public ResponseEntity<?> create(@RequestBody Inventory inventory) {
         try {
             Inventory created = service.create(inventory);
-            return new ResponseEntity<>(created, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // Reemplazar TODA la lista de categorías por IDs
     @PutMapping("/{id}/categories")
     public ResponseEntity<?> replaceCategories(
             @PathVariable Long id,
@@ -54,7 +53,6 @@ public class InventoryController {
         }
     }
 
-    // Agregar una categoría específica
     @PostMapping("/{id}/categories/{categoryId}")
     public ResponseEntity<?> addCategory(
             @PathVariable Long id,
@@ -66,7 +64,6 @@ public class InventoryController {
         }
     }
 
-    // Remover una categoría específica
     @DeleteMapping("/{id}/categories/{categoryId}")
     public ResponseEntity<?> removeCategory(
             @PathVariable Long id,

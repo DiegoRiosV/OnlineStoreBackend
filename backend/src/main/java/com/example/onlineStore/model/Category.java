@@ -24,18 +24,40 @@ public class Category {
     @JsonManagedReference
     private List<Product> listProducts = new ArrayList<>();
 
-    protected Category() {}
+    protected Category() {
+        // requerido por JPA
+    }
 
     public Category(String nameCategory, String description) {
         this.nameCategory = nameCategory;
         this.description = description;
     }
 
-    public Long getId() { return id; }
-    public String getNameCategory() { return nameCategory; }
-    public void setNameCategory(String nameCategory) { this.nameCategory = nameCategory; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public List<Product> getListProducts() { return listProducts; }
-    public void setListProducts(List<Product> listProducts) { this.listProducts = listProducts; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getNameCategory() {
+        return nameCategory;
+    }
+
+    public void setNameCategory(String nameCategory) {
+        this.nameCategory = nameCategory;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<Product> getListProducts() {
+        return listProducts;
+    }
+
+    public void setListProducts(List<Product> listProducts) {
+        this.listProducts = listProducts;
+    }
 }

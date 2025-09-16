@@ -46,7 +46,10 @@ public class CartItemService {
                 .orElseThrow(() -> new IllegalStateException("Product not found: " + productId));
 
         CartItem item = cartItemRepo.findByCart_IdAndProduct_Id(cart.getId(), productId)
-                .map(existing -> { existing.setQuantity(existing.getQuantity() + quantity); return existing; })
+                .map(existing -> {
+                    existing.setQuantity(existing.getQuantity() + quantity);
+                    return existing;
+                })
                 .orElseGet(() -> new CartItem(cart, product, quantity));
 
         return cartItemRepo.save(item);
@@ -71,7 +74,9 @@ public class CartItemService {
     }
 
     @Transactional
-    public void removeItem(Long id) { cartItemRepo.deleteById(id); }
+    public void removeItem(Long id) {
+        cartItemRepo.deleteById(id);
+    }
 
     @Transactional
     public void removeByProduct(Long cartId, Long productId) {
@@ -81,9 +86,10 @@ public class CartItemService {
     }
 
     @Transactional
-    public void clearCart(Long cartId) { cartItemRepo.deleteByCart_Id(cartId); }
+    public void clearCart(Long cartId) {
+        cartItemRepo.deleteByCart_Id(cartId);
+    }
 
-    // ---- Descuentos ----
     @Transactional
     public CartItem applyCode(Long cartId, Long productId, String code) {
         CartItem item = cartItemRepo.findByCart_IdAndProduct_Id(cartId, productId)
@@ -106,12 +112,11 @@ public class CartItemService {
         return cartItemRepo.save(item);
     }
 
-    /** Precio unitario efectivo (cupón > descuento de producto) */
     public BigDecimal effectiveUnitPrice(CartItem ci) {
         BigDecimal base = ci.getProduct().getPrice();
         if (ci.getCouponPct() != null) {
             return discountService.applyPct(base, ci.getCouponPct());
         }
-        return base; // ← NO aplicar descuento del Product por defecto
+        return base;
     }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService service;
+
     public CategoryController(CategoryService service) {
         this.service = service;
     }
@@ -35,7 +36,7 @@ public class CategoryController {
     public ResponseEntity<?> create(@RequestBody Category category) {
         try {
             Category created = service.create(category);
-            return new ResponseEntity<>(created, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
