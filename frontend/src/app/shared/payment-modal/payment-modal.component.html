@@ -1,0 +1,29 @@
+<div class="modal-overlay">
+  <div class="modal">
+    <h2>Método de pago</h2>
+    <p>Total a pagar: {{ total }} Bs</p>
+
+    <div class="payment-option">
+      <h3>PayPal</h3>
+      <input type="email" placeholder="Correo PayPal" [(ngModel)]="email">
+      <input type="password" placeholder="Contraseña" [(ngModel)]="password">
+      <button (click)="createPayPalPayment()">Crear Pago PayPal</button>
+    </div>
+
+    <hr>
+
+    <div class="payment-option">
+      <h3>Tarjeta de Crédito</h3>
+      <input type="text" placeholder="Número de tarjeta" [(ngModel)]="cardNumber">
+      <input type="text" placeholder="Titular" [(ngModel)]="cardHolder">
+      <input type="text" placeholder="Fecha expiración (MM/AA)" [(ngModel)]="expirationDate">
+      <input type="text" placeholder="CVV" [(ngModel)]="cvv">
+      <button (click)="createCreditCardPayment()">Crear Pago Tarjeta</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-success" (click)="makePayment()">Pagar ahora</button>
+      <button class="btn btn-secondary" (click)="close.emit()">Cancelar</button>
+    </div>
+  </div>
+</div>
