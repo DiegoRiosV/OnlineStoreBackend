@@ -1,7 +1,8 @@
 package com.example.onlineStore.model;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.math.BigDecimal;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "products")
@@ -27,6 +28,14 @@ public class Product {
 
     @Column(nullable = false)
     private int stock;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    @JsonBackReference
+    private Category category;
+
+    @Column(name = "image_url", length = 255)
+    private String imageUrl;
 
     // Muchos productos pueden compartir un mismo descuento (p.ej., “BLACKFRIDAY”)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -76,4 +85,21 @@ public class Product {
         }
         return price;
     }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 }

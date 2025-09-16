@@ -1,24 +1,25 @@
+<!-- product-detail.component.html -->
 <ng-container *ngIf="product$ | async as p">
   <main class="container product">
     <figure class="gallery">
-      <img [src]="p.imageUrl" [alt]="p.title" />
+      <img [src]="p.imageUrl" [alt]="p.nameProduct" />
     </figure>
 
     <aside class="panel">
       <div class="info">
-        <img [src]="p.imageUrl" alt="" class="thumb">
+        <img [src]="p.imageUrl" [alt]="p.nameProduct" class="thumb">
         <div>
-          <h2>{{ p.title }}</h2>
+          <h2>{{ p.nameProduct }}</h2>
           <div class="muted">Color: {{ p.color || '—' }}</div>
         </div>
       </div>
 
-      <div class="price"> {{ p.price | number:'1.2-2' }} Bs</div>
+      <div class="price">{{ p.price | number:'1.2-2' }} Bs</div>
 
       <div class="qty">
-        <button (click)="dec()">-</button>
+        <button type="button" (click)="dec()">-</button>
         <input type="number" min="1" [(ngModel)]="qty" />
-        <button (click)="inc()">+</button>
+        <button type="button" (click)="inc()">+</button>
       </div>
 
       <div class="input">
@@ -33,8 +34,8 @@
         </tr>
       </table>
 
-      <button class="btn" (click)="add(p); openDrawer()">Agregar a carrito</button>
-      <button class="btn secondary" (click)="openDrawer()">Ver carrito</button>
+      <button class="btn" type="button" (click)="add(p); openDrawer()">Agregar a carrito</button>
+      <button class="btn secondary" type="button" (click)="openDrawer()">Ver carrito</button>
     </aside>
   </main>
 </ng-container>

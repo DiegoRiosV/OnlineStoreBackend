@@ -16,10 +16,6 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
-
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
     }
@@ -48,4 +44,10 @@ public class ProductService {
         }
         productRepository.deleteById(id);
     }
+    public List<Product> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        System.out.println("Productos encontrados: " + products.size());
+        return products;
+    }
+
 }
