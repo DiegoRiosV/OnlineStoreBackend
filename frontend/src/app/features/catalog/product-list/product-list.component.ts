@@ -16,5 +16,5 @@ export class ProductListComponent implements OnInit {
   products$!: Observable<Product[]>;
   constructor(private api: ProductService, private cart: CartService) {}
   ngOnInit(){ this.products$ = this.api.getAll(); }
-  add(p: Product){ this.cart.add({ productId: p.id, title: p.title, price: p.price, imageUrl: p.imageUrl, qty: 1 }); }
+  add(p: Product){ this.cart.add({ productId: p.id, nameProduct: p.nameProduct, price: p.price, imageUrl: p.imageUrl, qty: 1 }); }
 }
