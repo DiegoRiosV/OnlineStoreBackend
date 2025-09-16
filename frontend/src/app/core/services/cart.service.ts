@@ -1,25 +1,42 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, map, combineLatest, Observable } from 'rxjs';
 import { CartItem } from '../models/product.model';
 import { CartApiService } from './cart-api.service';
+import { ProductService } from './product.service';
 
-const CART_ID = 1;
+const CART_ID = 1; // usa el id real del carrito
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private _items$ = new BehaviorSubject<CartItem[]>([]);
-  readonly items$ = this._items$.asObservable();
-  readonly count$ = this.items$.pipe(map(items => items.reduce((s,i)=> s + i.qty, 0)));
-  readonly total$ = this.items$.pipe(map(items => items.reduce((s,i)=> s + i.qty * Number(i.price), 0)));
+  private _rawItems$ = new BehaviorSubject<CartItem[]>([]);
 
-  constructor(private api: CartApiService) {
+  // se inicializan en el constructor (para no usar dependencias antes de tiempo)
+  readonly items$: Observable<CartItem[]>;
+  readonly count$: Observable<number>;
+  readonly total$: Observable<number>;
+
+  constructor(private api: CartApiService, private products: ProductService) {
+    // Enriquecer carrito con imagen del catálogo y dar SIEMPRE un string (fallback)
+    this.items$ = combineLatest([this._rawItems$, this.products.indexById$]).pipe(
+      map(([items, idx]) =>
+        items.map(i => {
+          const p = idx.get(Number(i.productId));
+          const imageUrl =
+            (p?.imageUrl) ??
+            (p?.idProduct ? `assets/img/${p.idProduct}.png` : 'assets/img/placeholder.png');
+          return { ...i, imageUrl }; // ← siempre string
+        })
+      )
+    );
+
+    this.count$ = this.items$.pipe(map(xs => xs.reduce((s, i) => s + i.qty, 0)));
+    this.total$ = this.items$.pipe(map(xs => xs.reduce((s, i) => s + i.qty * Number(i.price), 0)));
+
     this.refresh();
   }
 
   private refresh() {
-    this.api.getCart(CART_ID).subscribe((items: CartItem[]) => {
-      this._items$.next(items ?? []);
-    });
+    this.api.getCart(CART_ID).subscribe((items: CartItem[]) => this._rawItems$.next(items ?? []));
   }
 
   add(item: CartItem) {
@@ -27,7 +44,6 @@ export class CartService {
       .subscribe({ next: () => this.refresh() });
   }
 
-  // ------- opción 1: backend por productId -------
   update(productId: number, qty: number) {
     this.api.updateQtyByProduct(CART_ID, productId, Math.max(1, qty))
       .subscribe({ next: () => this.refresh() });
@@ -37,7 +53,6 @@ export class CartService {
     this.api.removeByProduct(CART_ID, productId)
       .subscribe({ next: () => this.refresh() });
   }
-  // -----------------------------------------------
 
   clear() {
     this.api.clear(CART_ID).subscribe({ next: () => this.refresh() });
