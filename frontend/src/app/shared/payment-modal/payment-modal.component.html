@@ -27,10 +27,25 @@
 
   <!-- Tarjeta -->
   <div *ngIf="selectedMethod==='creditcard'" style="display:flex;flex-direction:column;gap:10px">
-    <input placeholder="Número de tarjeta" [(ngModel)]="cardNumber" />
-    <input placeholder="Titular" [(ngModel)]="cardHolder" />
-    <input placeholder="Fecha expiración (MM/AA)" [(ngModel)]="expirationDate" />
-    <input placeholder="CVV" [(ngModel)]="cvv" />
+    <input placeholder="Número de tarjeta"
+           [(ngModel)]="cardNumber"
+           (input)="onCardNumberInput()"
+           inputmode="numeric" />
+
+    <input placeholder="Titular"
+           [(ngModel)]="cardHolder" />
+
+    <input placeholder="Fecha expiración (MM/AA)"
+           [(ngModel)]="expirationDate"
+           (input)="onExpirationInput()"
+           inputmode="numeric" />
+
+    <input placeholder="CVV"
+           [(ngModel)]="cvv"
+           maxlength="4"
+           (input)="onCvvInput()"
+           inputmode="numeric" />
+
     <button class="btn dark"
             [disabled]="!isValidCard() || loading"
             (click)="payNow()">
