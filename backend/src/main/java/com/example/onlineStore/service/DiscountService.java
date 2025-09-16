@@ -10,6 +10,6 @@ public interface DiscountService {
     /** Devuelve el descuento si el código es válido para el producto y está vigente. */
     Optional<Discount> validateForProduct(String code, Product product);
 
-    /** Calcula price * (1 - pct/100) redondeado a 2 decimales. */
+    /** Calcula precio con porcentaje (0..100). */
     BigDecimal applyPct(BigDecimal price, BigDecimal pct);
 }

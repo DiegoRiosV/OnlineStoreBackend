@@ -23,19 +23,22 @@ public class DiscountServiceImpl implements DiscountService {
     public Optional<Discount> validateForProduct(String code, Product product) {
         if (code == null || code.isBlank()) return Optional.empty();
 
-        // Buscar por discount_code con SQL nativo
-        var od = repo.findByCode(code.trim());
+        // 👇 aquí estaba el fallo
+        Optional<Discount> od = repo.findByIdDiscount(code.trim());
         if (od.isEmpty()) return Optional.empty();
-        var d = od.get();
 
-        // Vigencia y porcentaje
+        Discount d = od.get();
+
+        // vigencia (inclusiva, según tu Validation)
         if (!Validation.hasStarted(d.getStartDate())) return Optional.empty();
         if (!Validation.notExpired(d.getEndDate()))  return Optional.empty();
+
+        // porcentaje válido (0..100)
         if (!Validation.isValidPercentage(d.getPercentage())) return Optional.empty();
 
-        // Requisito: el producto debe tener asignado ese descuento (por ID)
-        if (product.getDiscount() == null || product.getDiscount().getId() == null) return Optional.empty();
-        if (!product.getDiscount().getId().equals(d.getId())) return Optional.empty();
+        // el producto debe estar enlazado al mismo código
+        if (product.getDiscount() == null) return Optional.empty();
+        if (!code.equalsIgnoreCase(product.getDiscount().getIdDiscount())) return Optional.empty();
 
         return Optional.of(d);
     }
@@ -43,7 +46,9 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     public BigDecimal applyPct(BigDecimal price, BigDecimal pct) {
         if (price == null || pct == null) return price;
-        var factor = BigDecimal.ONE.subtract(pct.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP));
+        BigDecimal factor = BigDecimal.ONE.subtract(
+                pct.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP)
+        );
         return price.multiply(factor).setScale(2, RoundingMode.HALF_UP);
     }
 }

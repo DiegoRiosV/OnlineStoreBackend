@@ -109,9 +109,9 @@ public class CartItemService {
     /** Precio unitario efectivo (cupón > descuento de producto) */
     public BigDecimal effectiveUnitPrice(CartItem ci) {
         BigDecimal base = ci.getProduct().getPrice();
-        if (ci.getCouponPct() != null) return discountService.applyPct(base, ci.getCouponPct());
-        if (ci.getProduct().getDiscount() != null)
-            return discountService.applyPct(base, ci.getProduct().getDiscount().getPercentage());
-        return base;
+        if (ci.getCouponPct() != null) {
+            return discountService.applyPct(base, ci.getCouponPct());
+        }
+        return base; // ← NO aplicar descuento del Product por defecto
     }
 }

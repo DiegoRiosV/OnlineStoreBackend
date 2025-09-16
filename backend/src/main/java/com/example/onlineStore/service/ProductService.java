@@ -6,7 +6,6 @@ import com.example.onlineStore.repository.DiscountRepository;
 import com.example.onlineStore.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +64,7 @@ public class ProductService {
     public Product attachDiscount(Long productId, String code) {
         Product p = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalStateException("Product not found: " + productId));
-        Discount d = discountRepository.findByCode(code)
+        Discount d = discountRepository.findByIdDiscount(code)
                 .orElseThrow(() -> new IllegalStateException("Discount not found: " + code));
         p.setDiscount(d);
         return productRepository.save(p);

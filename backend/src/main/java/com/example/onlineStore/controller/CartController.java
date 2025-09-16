@@ -32,7 +32,9 @@ public class CartController {
     /** Lista carrito con PRECIO EFECTIVO */
     @GetMapping("/{cartId}")
     public List<CartItemDTO> getCart(@PathVariable Long cartId) {
-        return service.getCart(cartId).stream().map(this::toDtoEffective).toList();
+        return service.getCart(cartId).stream()
+                .map(this::toDtoEffective)   // 👈 aquí
+                .toList();
     }
 
     @PostMapping("/ensure")
@@ -99,16 +101,15 @@ public class CartController {
         return ResponseEntity.ok(toDtoEffective(updated));
     }
 
-    // ---- mapper con precio efectivo ----
-    private CartItemDTO toDtoEffective(CartItem e) {
-        Product p = e.getProduct();
-        var unit = service.effectiveUnitPrice(e);
-        return new CartItemDTO(p.getId(), p.getNameProduct(), unit, e.getQuantity());
-    }
 
-    // (Conservo el mapper base si lo necesitas en otro lado)
-    private static CartItemDTO toDto(CartItem e) {
-        Product p = e.getProduct();
-        return new CartItemDTO(p.getId(), p.getNameProduct(), p.getPrice(), e.getQuantity());
+    private CartItemDTO toDtoEffective(CartItem entity) {
+        Product p = entity.getProduct();
+        var unit = service.effectiveUnitPrice(entity);
+        return new CartItemDTO(
+                p.getId(),
+                p.getNameProduct(),
+                unit,
+                entity.getQuantity()
+        );
     }
 }
