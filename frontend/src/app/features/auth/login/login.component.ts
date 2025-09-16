@@ -30,19 +30,25 @@ export class LoginComponent {
   hidePassword = true;
   errorMessage = '';
 
+  loggedClient: any = null; // aquí guardamos el cliente validado
+
   constructor(private http: HttpClient, private router: Router) {}
 
   onSubmit() {
-  this.http.post<{ token: string }>('/api/auth/login', {
-    email: this.email,
-    password: this.password
-    }).subscribe({
-      next: (res) => {
-        localStorage.setItem('token', res.token);
-        this.router.navigate(['/']); // home
+    this.http.get<any[]>('http://localhost:8080/clients/all').subscribe({
+      next: (clients) => {
+        const client = clients.find(c => c.mail === this.email && c.password === this.password);
+        if (client) {
+          this.loggedClient = client;
+          this.errorMessage = '';
+          alert(`Bienvenido, ${client.name}`);
+          this.router.navigate(['/']);
+        } else {
+          this.errorMessage = 'Credenciales inválidas';
+        }
       },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Credenciales inválidas';
+      error: () => {
+        this.errorMessage = 'Error al conectar con el servidor';
       }
     });
   }
