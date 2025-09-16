@@ -1,13 +1,13 @@
-// src/app/core/services/cart-api.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';                        // ✅ import faltante
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AddItemRequest, CartItem } from '../models/product.model';
 
 @Injectable({ providedIn: 'root' })
 export class CartApiService {
   private base = `${environment.apiUrl}/cart`;
+
   constructor(private http: HttpClient) {}
 
   getCart(cartId: number): Observable<CartItem[]> {
@@ -18,7 +18,7 @@ export class CartApiService {
     return this.http.post<CartItem>(`${this.base}/items`, body);
   }
 
-  // --------- Opción (1): endpoints por productId ----------
+  // Endpoints por productId (alineado a tu back)
   updateQtyByProduct(cartId: number, productId: number, qty: number): Observable<void> {
     return this.http.put<void>(`${this.base}/${cartId}/items/${productId}`, { quantity: qty });
   }
@@ -27,18 +27,16 @@ export class CartApiService {
     return this.http.delete<void>(`${this.base}/${cartId}/items/${productId}`);
   }
 
-  // --------------------------------------------------------
-
   clear(cartId: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${cartId}/clear`);
   }
 
-  /* --------- Opción (2): si mantienes cartItemId en el back ----------
-  updateQtyByCartItemId(cartItemId: number, qty: number): Observable<CartItem> {
-    return this.http.patch<CartItem>(`${this.base}/items/${cartItemId}`, { quantity: qty });
+  // 👇 Cupón
+  applyCode(cartId: number, productId: number, code: string): Observable<CartItem> {
+    return this.http.post<CartItem>(`${this.base}/${cartId}/items/${productId}/apply-code`, { code });
   }
-  removeByCartItemId(cartItemId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/items/${cartItemId}`);
+
+  removeCode(cartId: number, productId: number): Observable<CartItem> {
+    return this.http.delete<CartItem>(`${this.base}/${cartId}/items/${productId}/apply-code`);
   }
-  --------------------------------------------------------------------- */
 }

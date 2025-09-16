@@ -15,7 +15,7 @@ import { PaymentModalComponent } from '../payment-modal/payment-modal.component'
     AsyncPipe,
     DecimalPipe,
     FormsModule,
-    PaymentModalComponent   // 👈 se importa el modal
+    PaymentModalComponent
   ],
   templateUrl: './cart-drawer.component.html',
   styleUrls: ['./cart-drawer.component.css']
@@ -28,6 +28,9 @@ export class CartDrawerComponent implements OnInit {
 
   showPayment: boolean = false;
 
+  // 👇 NUEVO: input de código por producto
+  codes: Record<number, string> = {};
+
   constructor(private cart: CartService) {}
 
   ngOnInit(): void {
@@ -35,28 +38,26 @@ export class CartDrawerComponent implements OnInit {
     this.total$ = this.cart.total$;
   }
 
-  openPayment() {
-    this.showPayment = true;
-  }
-
-  closePayment() {
-    this.showPayment = false;
-  }
+  openPayment() { this.showPayment = true; }
+  closePayment() { this.showPayment = false; }
 
   @HostListener('open')
-  onOpen() { 
-    this.openDrawer = true; 
+  onOpen() { this.openDrawer = true; }
+
+  close() { this.openDrawer = false; }
+
+  remove(id: any) { this.cart.remove(id); }
+
+  update(id: any, qty: number) { this.cart.update(id, qty); }
+
+  // 👇 NUEVO: acciones de cupón en el carrito
+  apply(productId: number) {
+    const code = (this.codes[productId] || '').trim();
+    if (code) this.cart.applyCode(productId, code);
   }
 
-  close() { 
-    this.openDrawer = false; 
-  }
-
-  remove(id: any) { 
-    this.cart.remove(id); 
-  }
-
-  update(id: any, qty: number) { 
-    this.cart.update(id, qty); 
+  removeCode(productId: number) {
+    this.cart.removeCode(productId);
+    this.codes[productId] = '';
   }
 }

@@ -10,21 +10,21 @@ const CART_ID = 1; // usa el id real del carrito
 export class CartService {
   private _rawItems$ = new BehaviorSubject<CartItem[]>([]);
 
-  // se inicializan en el constructor (para no usar dependencias antes de tiempo)
+  // observables públicos
   readonly items$: Observable<CartItem[]>;
   readonly count$: Observable<number>;
   readonly total$: Observable<number>;
 
   constructor(private api: CartApiService, private products: ProductService) {
-    // Enriquecer carrito con imagen del catálogo y dar SIEMPRE un string (fallback)
+    // Enriquecer con imagen del catálogo (y siempre devolver un string)
     this.items$ = combineLatest([this._rawItems$, this.products.indexById$]).pipe(
       map(([items, idx]) =>
         items.map(i => {
           const p = idx.get(Number(i.productId));
           const imageUrl =
             (p?.imageUrl) ??
-            (p?.idProduct ? `assets/img/${p.idProduct}.png` : 'assets/img/placeholder.png');
-          return { ...i, imageUrl }; // ← siempre string
+            (p?.id ? `assets/img/${p.id}.png` : 'assets/img/placeholder.png');
+          return { ...i, imageUrl };
         })
       )
     );
@@ -36,12 +36,27 @@ export class CartService {
   }
 
   private refresh() {
-    this.api.getCart(CART_ID).subscribe((items: CartItem[]) => this._rawItems$.next(items ?? []));
+    this.api.getCart(CART_ID).subscribe(items => this._rawItems$.next(items ?? []));
   }
 
   add(item: CartItem) {
     this.api.addItem({ cartId: CART_ID, productId: item.productId, quantity: item.qty })
       .subscribe({ next: () => this.refresh() });
+  }
+
+  // Añade y si hay código lo aplica
+  addThenApply(item: CartItem, code?: string) {
+    this.api.addItem({ cartId: CART_ID, productId: item.productId, quantity: item.qty })
+      .subscribe({
+        next: () => {
+          const c = code?.trim();
+          if (c) {
+            this.applyCode(item.productId, c);
+          } else {
+            this.refresh();
+          }
+        }
+      });
   }
 
   update(productId: number, qty: number) {
@@ -56,5 +71,18 @@ export class CartService {
 
   clear() {
     this.api.clear(CART_ID).subscribe({ next: () => this.refresh() });
+  }
+
+  // 👇 Cupón
+  applyCode(productId: number, code: string) {
+    const c = code?.trim();
+    if (!c) return;
+    this.api.applyCode(CART_ID, productId, c)
+      .subscribe({ next: () => this.refresh() });
+  }
+
+  removeCode(productId: number) {
+    this.api.removeCode(CART_ID, productId)
+      .subscribe({ next: () => this.refresh() });
   }
 }
