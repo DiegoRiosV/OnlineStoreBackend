@@ -14,9 +14,17 @@ export interface Product {
 
 // OJO: CartItem usa nameProduct (no "title")
 export interface CartItem {
-  productId: Product['id'];
-  nameProduct: string;
-  price: number;
-  imageUrl: string;
-  qty: number;
+  productId: number;
+    nameProduct: string;
+    price: number;
+    qty: number;
+    imageUrl: string;
+}
+
+
+export interface AddItemRequest {
+  cartId: number;
+  productId: number;
+  quantity: number;
+  imageUrl?: string;
 }
