@@ -20,3 +20,16 @@ export interface CartItem {
   imageUrl: string;
   qty: number;
 }
+
+export interface CartItem {
+  productId: number;
+  nameProduct: string;
+  price: number;  // BigDecimal en back → number en front
+  qty: number;
+}
+
+export interface AddItemRequest {
+  cartId: number;
+  productId: number;
+  quantity: number;
+}

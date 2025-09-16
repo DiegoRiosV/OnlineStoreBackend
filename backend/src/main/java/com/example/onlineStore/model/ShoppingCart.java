@@ -27,6 +27,9 @@ public class ShoppingCart {
         this.client = client;
     }
 
+    public static ShoppingCart create() {
+        return new ShoppingCart();   // ← permitido aquí dentro
+    }
     // === Getters/Setters ===
     public Long getId() { return id; }
 

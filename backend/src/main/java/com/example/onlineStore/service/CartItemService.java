@@ -35,17 +35,12 @@ public class CartItemService {
     public CartItem addItem(Long cartId, Long productId, int quantity) {
         if (quantity <= 0) throw new IllegalArgumentException("quantity must be > 0");
 
-        ShoppingCart cart = cartRepo.findById(cartId)
-                .orElseThrow(() -> new IllegalStateException("Cart not found: " + cartId));
-
+        ShoppingCart cart = ensureCartExists(cartId);
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new IllegalStateException("Product not found: " + productId));
 
-        // (opcional) validar stock disponible
-        // if (product.getStock() < quantity) throw new IllegalStateException("Not enough stock");
-
-        // si ya existe la línea (cart+product), solo sumamos cantidad
-        CartItem item = cartItemRepo.findByCart_IdAndProduct_Id(cartId, productId)
+        // si ya existe la línea, sumamos cantidad
+        CartItem item = cartItemRepo.findByCart_IdAndProduct_Id(cart.getId(), productId)
                 .map(existing -> {
                     existing.setQuantity(existing.getQuantity() + quantity);
                     return existing;
@@ -62,11 +57,18 @@ public class CartItemService {
         CartItem item = cartItemRepo.findById(cartItemId)
                 .orElseThrow(() -> new IllegalStateException("CartItem not found: " + cartItemId));
 
-        // (opcional) validar contra stock del producto
-        // if (item.getProduct().getStock() < quantity) throw new IllegalStateException("Not enough stock");
-
         item.setQuantity(quantity);
         return cartItemRepo.save(item);
+    }
+
+    /** Variante por cartId + productId (para el front actual) */
+    @Transactional
+    public void updateQuantityByProduct(Long cartId, Long productId, int quantity) {
+        if (quantity <= 0) throw new IllegalArgumentException("quantity must be > 0");
+        CartItem item = cartItemRepo.findByCart_IdAndProduct_Id(cartId, productId)
+                .orElseThrow(() -> new IllegalStateException("CartItem not found for cartId=" + cartId + " productId=" + productId));
+        item.setQuantity(quantity);
+        cartItemRepo.save(item);
     }
 
     @Transactional
@@ -74,8 +76,22 @@ public class CartItemService {
         cartItemRepo.deleteById(id);
     }
 
+    /** Variante por cartId + productId (para el front actual) */
+    @Transactional
+    public void removeByProduct(Long cartId, Long productId) {
+        CartItem item = cartItemRepo.findByCart_IdAndProduct_Id(cartId, productId)
+                .orElseThrow(() -> new IllegalStateException("CartItem not found for cartId=" + cartId + " productId=" + productId));
+        cartItemRepo.deleteById(item.getId());
+    }
+
     @Transactional
     public void clearCart(Long cartId) {
         cartItemRepo.deleteByCart_Id(cartId);
+    }
+
+    /** Crea el carrito si no existe (PK auto-incremental) */
+    private ShoppingCart ensureCartExists(Long cartId) {
+        return cartRepo.findById(cartId)
+                .orElseGet(() -> cartRepo.save(ShoppingCart.create()));  // ✅ antes: new ShoppingCart()
     }
 }

@@ -1,38 +1,45 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
 import { CartItem } from '../models/product.model';
+import { CartApiService } from './cart-api.service';
 
-const CART_KEY = 'biba.cart.v1';
+const CART_ID = 1;
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private _items$ = new BehaviorSubject<CartItem[]>(this.load());
+  private _items$ = new BehaviorSubject<CartItem[]>([]);
   readonly items$ = this._items$.asObservable();
-  readonly count$ = this.items$.pipe(map(items => items.reduce((s,i)=> s+i.qty, 0)));
-  readonly total$ = this.items$.pipe(map(items => items.reduce((s,i)=> s+i.qty*i.price, 0)));
+  readonly count$ = this.items$.pipe(map(items => items.reduce((s,i)=> s + i.qty, 0)));
+  readonly total$ = this.items$.pipe(map(items => items.reduce((s,i)=> s + i.qty * Number(i.price), 0)));
 
-  private load(): CartItem[] {
-    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; }
+  constructor(private api: CartApiService) {
+    this.refresh();
   }
-  private save(v: CartItem[]) { localStorage.setItem(CART_KEY, JSON.stringify(v)); }
+
+  private refresh() {
+    this.api.getCart(CART_ID).subscribe((items: CartItem[]) => {
+      this._items$.next(items ?? []);
+    });
+  }
 
   add(item: CartItem) {
-    const list = [...this._items$.value];
-    const idx = list.findIndex(x => x.productId === item.productId);
-    if (idx > -1) list[idx] = { ...list[idx], qty: list[idx].qty + item.qty };
-    else list.push(item);
-    this._items$.next(list); this.save(list);
+    this.api.addItem({ cartId: CART_ID, productId: item.productId, quantity: item.qty })
+      .subscribe({ next: () => this.refresh() });
   }
 
-  update(productId: CartItem['productId'], qty: number) {
-    const list = this._items$.value.map(x => x.productId === productId ? { ...x, qty: Math.max(1, qty) } : x);
-    this._items$.next(list); this.save(list);
+  // ------- opción 1: backend por productId -------
+  update(productId: number, qty: number) {
+    this.api.updateQtyByProduct(CART_ID, productId, Math.max(1, qty))
+      .subscribe({ next: () => this.refresh() });
   }
 
-  remove(productId: CartItem['productId']) {
-    const list = this._items$.value.filter(x => x.productId !== productId);
-    this._items$.next(list); this.save(list);
+  remove(productId: number) {
+    this.api.removeByProduct(CART_ID, productId)
+      .subscribe({ next: () => this.refresh() });
   }
+  // -----------------------------------------------
 
-  clear(){ this._items$.next([]); this.save([]); }
+  clear() {
+    this.api.clear(CART_ID).subscribe({ next: () => this.refresh() });
+  }
 }
