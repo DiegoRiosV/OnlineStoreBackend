@@ -1,19 +1,8 @@
-<div class="modal">
-  <h2>Selecciona método de pago</h2>
-
-  <label>
-    <input type="radio" [(ngModel)]="method" value="credit-card"> Tarjeta de crédito
-  </label>
-  <div *ngIf="method === 'credit-card'">
-    <input [(ngModel)]="cardNumber" placeholder="Número de tarjeta">
+<div class="modal-backdrop">
+  <div class="modal">
+    <h2>Selecciona método de pago</h2>
+    <button (click)="pay('paypal')">PayPal</button>
+    <button (click)="pay('credit')">Tarjeta de Crédito</button>
+    <button (click)="close()">Cancelar</button>
   </div>
-
-  <label>
-    <input type="radio" [(ngModel)]="method" value="paypal"> PayPal
-  </label>
-  <div *ngIf="method === 'paypal'">
-    <input [(ngModel)]="paypalEmail" placeholder="Email de PayPal">
-  </div>
-
-  <button (click)="pay()">Pagar</button>
 </div>

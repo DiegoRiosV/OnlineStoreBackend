@@ -1,22 +1,20 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { NgFor, NgIf, AsyncPipe, DecimalPipe } from '@angular/common';
-import { CartService } from '../../core/services/cart.service';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CartItem } from '../../core/models/product.model';
-import { FormsModule } from '@angular/forms';
-import { PaymentModalComponent } from '../payment-modal/payment-modal.component';
+import { CartService } from '../../core/services/cart.service';
+import {PaymentModalComponent} from './../payment-modal/payment-modal.component'
 @Component({
   selector: 'app-cart-drawer',
-  standalone: true,
-  imports: [NgFor, NgIf, AsyncPipe, DecimalPipe, FormsModule, PaymentModalComponent],
+  imports: [PaymentModalComponent],
   templateUrl: './cart-drawer.component.html',
   styleUrls: ['./cart-drawer.component.css']
 })
 export class CartDrawerComponent implements OnInit {
-  openDrawer = false;
-
   items$!: Observable<CartItem[]>;
   total$!: Observable<number>;
+
+  openDrawer: boolean = false;   
+  showPayment: boolean = false;  
 
   constructor(private cart: CartService) {}
 
@@ -24,15 +22,24 @@ export class CartDrawerComponent implements OnInit {
     this.items$ = this.cart.items$;
     this.total$ = this.cart.total$;
   }
-  openPayment() { 
-    const w = window.open('', 'Pago', 'width=400,height=400');
-    if (w) {
-      w.document.write('<app-payment-modal></app-payment-modal>');
-    }
+
+  openPayment() {
+    this.showPayment = true;
   }
 
-  @HostListener('open') onOpen(){ this.openDrawer = true; }
-  close(){ this.openDrawer = false; }
-  remove(id: any){ this.cart.remove(id); }
-  update(id: any, qty: number){ this.cart.update(id, qty); }
+  closePayment() {
+    this.showPayment = false;
+  }
+
+  closeDrawer() {
+    this.openDrawer = false; 
+  }
+  processPayment(method: string) {
+    console.log('Método elegido:', method);
+
+    //this.http.post('http://localhost:8081/api/payments', { method, items: ... })
+
+    this.closePayment();
+    alert(`Pago con ${method} procesado exitosamente 🚀`);
+  }
 }
